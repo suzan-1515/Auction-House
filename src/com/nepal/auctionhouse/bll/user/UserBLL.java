@@ -3,10 +3,10 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nepal.auctionhouse.bll;
+package com.nepal.auctionhouse.bll.user;
 
-import com.nepal.auctionhouse.dao.UserDAO;
-import com.nepal.auctionhouse.dao.UserDAOImpl;
+import com.nepal.auctionhouse.dao.user.UserDAO;
+import com.nepal.auctionhouse.dao.user.UserDAOImpl;
 import com.nepal.auctionhouse.database.DBConnection;
 import com.nepal.auctionhouse.entity.user.User;
 import com.nepal.auctionhouse.entity.user.UserInfo;

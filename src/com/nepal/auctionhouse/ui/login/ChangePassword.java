@@ -5,7 +5,7 @@
  */
 package com.nepal.auctionhouse.ui.login;
 
-import com.nepal.auctionhouse.bll.UserBLL;
+import com.nepal.auctionhouse.bll.user.UserBLL;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.user.UserValidation;

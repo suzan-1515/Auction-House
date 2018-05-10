@@ -5,7 +5,7 @@
  */
 package com.nepal.auctionhouse.ui.login;
 
-import com.nepal.auctionhouse.bll.UserBLL;
+import com.nepal.auctionhouse.bll.user.UserBLL;
 import com.nepal.auctionhouse.entity.user.User;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.ui.dashboard.Dashboard;

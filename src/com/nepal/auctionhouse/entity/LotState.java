@@ -3,23 +3,21 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nepal.auctionhouse.entity.role;
-
-import java.io.Serializable;
+package com.nepal.auctionhouse.entity;
 
 /**
  *
  * @author Suzn
  */
-public class Role implements Serializable {
+public final class LotState {
 
     private int id;
     private String title;
 
-    public Role() {
+    public LotState() {
     }
 
-    public Role(int id, String title) {
+    public LotState(int id, String title) {
         this.id = id;
         this.title = title;
     }

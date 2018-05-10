@@ -3,9 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nepal.auctionhouse.dao;
+package com.nepal.auctionhouse.dao.user;
 
-import com.nepal.auctionhouse.entity.role.Role;
+import com.nepal.auctionhouse.entity.Role;
 import com.nepal.auctionhouse.entity.user.User;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.params.RoleParams;
@@ -123,7 +123,7 @@ public class UserDAOImpl implements UserDAO {
                 "SELECT usr.u_id, usr.u_name, usr.u_username, usr.u_password, "
                 + "role.r_id, role.r_title FROM " + UserParams.TABLE_NAME + " "
                 + "usr INNER JOIN " + RoleParams.TABLE_NAME + " role ON usr.u_role = role.r_id "
-                + "WHERE usr.u_id = 1 LIMIT 1")) {
+                + "WHERE usr.u_id =? LIMIT 1")) {
             pst.setInt(1, id);
             ResultSet resultSet = pst.executeQuery();
             while (resultSet.next()) {

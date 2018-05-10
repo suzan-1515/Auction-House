@@ -3,8 +3,9 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nepal.auctionhouse.dao;
+package com.nepal.auctionhouse.dao.user;
 
+import com.nepal.auctionhouse.dao.DAO;
 import com.nepal.auctionhouse.entity.user.User;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import java.sql.SQLException;

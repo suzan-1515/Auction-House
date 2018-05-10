@@ -11,7 +11,7 @@ import java.sql.Timestamp;
  *
  * @author Suzn
  */
-public class UserInfo extends User {
+public final class UserInfo extends User {
 
     private Timestamp loginTimestamp;
     private Timestamp logoutTimestamp;

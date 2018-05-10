@@ -5,14 +5,13 @@
  */
 package com.nepal.auctionhouse.entity.user;
 
-import com.nepal.auctionhouse.entity.role.Role;
-import java.io.Serializable;
+import com.nepal.auctionhouse.entity.Role;
 
 /**
  *
  * @author Suzn
  */
-public class User implements Serializable {
+public class User {
 
     private int id;
     private String name;
@@ -21,6 +20,7 @@ public class User implements Serializable {
     private Role role;
 
     public User() {
+        role = new Role();
     }
 
     public User(int id) {
