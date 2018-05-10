@@ -5,7 +5,6 @@
  */
 package com.nepal.auctionhouse.database;
 
-import com.sujan.lms.common.util.Logy;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -22,16 +21,6 @@ public class DBConnection {
     static String unicode = "?useUnicode=yes&characterEncoding=UTF-8";
 
     public static Connection geConnection() throws SQLException {
-
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-
-            return DriverManager.getConnection(url + unicode, user, pass);
-        } catch (ClassNotFoundException ex) {
-            Logy.e(ex);
-            throw new RuntimeException(ex);
-        } catch (SQLException ex) {
-            throw ex;
-        }
+        return DriverManager.getConnection(url + unicode, user, pass);
     }
 }

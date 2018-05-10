@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sujan.lms.common.validation;
+package com.nepal.auctionhouse.validation;
 
 import java.awt.Component;
 import java.util.Calendar;
@@ -34,7 +34,7 @@ public abstract class BaseValidation {
         return (date == null);
     }
 
-    protected boolean isExpiryDateValid(Calendar expiryDate) {
+    protected boolean isBeforeDate(Calendar expiryDate) {
         return expiryDate.before(java.util.Calendar.getInstance());
     }
 

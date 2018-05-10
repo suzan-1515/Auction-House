@@ -17,6 +17,10 @@ public final class LotState {
     public LotState() {
     }
 
+    public LotState(int id) {
+        this.id = id;
+    }
+    
     public LotState(int id, String title) {
         this.id = id;
         this.title = title;

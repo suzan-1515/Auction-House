@@ -7,7 +7,7 @@ package com.nepal.auctionhouse.dao.auction;
 
 import com.nepal.auctionhouse.entity.Auction;
 import com.nepal.auctionhouse.params.AuctionParams;
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -55,12 +55,17 @@ public class AuctionDAOImpl implements AuctionDAO {
     @Override
     public int save(Auction t) throws SQLException {
         int id;
-        try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?,?)")) {
-            pst.setDate(1, t.getDate());
-            pst.setString(2, t.getSlot());
-            pst.setString(3, t.getVenue());
-            id = pst.executeUpdate();
+        try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + " "
+                + "values(?,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
+            pst.setInt(1, t.getId());
+            pst.setDate(2, t.getDate());
+            pst.setString(3, t.getSlot());
+            pst.setString(4, t.getVenue());
+            pst.executeUpdate();
+
+            ResultSet rs = pst.getGeneratedKeys();
+            rs.next();
+            id = rs.getInt(1);
 
             Logy.d("Auction inserted successfully");
         }
@@ -80,12 +85,14 @@ public class AuctionDAOImpl implements AuctionDAO {
         int id;
         try (PreparedStatement pst = connection.prepareStatement(
                 "UPDATE " + tableName + " SET "
-                + AuctionParams.DATE + "=?"
-                + AuctionParams.SLOT + "=?"
-                + AuctionParams.VENUE + "=?")) {
+                + AuctionParams.DATE + "=?,"
+                + AuctionParams.SLOT + "=?,"
+                + AuctionParams.VENUE + "=? "
+                + "WHERE " + AuctionParams.ID + "=?")) {
             pst.setDate(1, t.getDate());
             pst.setString(2, t.getSlot());
             pst.setString(3, t.getVenue());
+            pst.setInt(4, t.getId());
             id = pst.executeUpdate();
 
             Logy.d("Auction updated successfully");
@@ -123,7 +130,7 @@ public class AuctionDAOImpl implements AuctionDAO {
     @Override
     public Auction findById(int id) throws SQLException {
         try (PreparedStatement pst = connection.prepareStatement(
-                "SELECT * FROM " + AuctionParams.TABLE_NAME + " WHERE a_id =?  LIMIT 1")) {
+                "SELECT * FROM " + tableName + " WHERE " + AuctionParams.ID + " =?  LIMIT 1")) {
             pst.setInt(1, id);
             ResultSet resultSet = pst.executeQuery();
             while (resultSet.next()) {
@@ -148,7 +155,7 @@ public class AuctionDAOImpl implements AuctionDAO {
      */
     @Override
     public List<Auction> findAll() throws SQLException {
-        String query = "SELECT * FROM " + AuctionParams.TABLE_NAME + " ORDER BY DESC a_id";
+        String query = "SELECT * FROM " + tableName;
         List<Auction> auctionInfoList = new ArrayList<>();
 
         try (Statement pst = connection.createStatement()) {
@@ -160,10 +167,9 @@ public class AuctionDAOImpl implements AuctionDAO {
                 auction.setSlot(resultSet.getString(AuctionParams.SLOT));
                 auction.setVenue(resultSet.getString(AuctionParams.VENUE));
 
-                Logy.d("Auction fetched successfully");
-
                 auctionInfoList.add(auction);
             }
+            Logy.d("Auction fetched successfully");
         }
 
         return auctionInfoList;

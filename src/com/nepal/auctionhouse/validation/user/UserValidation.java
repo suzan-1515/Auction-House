@@ -3,11 +3,11 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nepal.auctionhouse.user;
+package com.nepal.auctionhouse.validation.user;
 
-import com.sujan.lms.common.widget.Alert;
-import com.sujan.lms.common.util.Logy;
-import com.sujan.lms.common.validation.BaseValidation;
+import com.nepal.auctionhouse.validation.BaseValidation;
+import com.nepal.auctionhouse.widget.Alert;
+import com.nepal.auctionhouse.util.Logy;
 import java.awt.Component;
 
 /**

@@ -13,6 +13,7 @@ import com.nepal.auctionhouse.exception.DuplicateRecordException;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.AuctionParams;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -113,6 +114,11 @@ public class AuctionBLL {
      */
     public static boolean isAuctionAvailable(Auction auction) throws SQLException {
         return getAuctionById(auction.getId()) != null;
+    }
+
+    public static String getAuctionState(Date date) {
+        return date.before(new Date(new java.util.Date().getTime())) ? AuctionParams.STATE_PAST
+                : AuctionParams.STATE_UPCOMING;
     }
 
 }

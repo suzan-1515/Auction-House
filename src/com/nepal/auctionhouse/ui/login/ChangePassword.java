@@ -8,9 +8,9 @@ package com.nepal.auctionhouse.ui.login;
 import com.nepal.auctionhouse.bll.user.UserBLL;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
-import com.nepal.auctionhouse.user.UserValidation;
-import com.sujan.lms.common.widget.Alert;
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.validation.user.UserValidation;
+import com.nepal.auctionhouse.widget.Alert;
+import com.nepal.auctionhouse.util.Logy;
 import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 
@@ -72,7 +72,7 @@ public final class ChangePassword extends javax.swing.JFrame {
 
         rootPanel.setLayout(new java.awt.BorderLayout());
 
-        topPanel.setBackground(new java.awt.Color(39, 26, 252));
+        topPanel.setBackground(new java.awt.Color(67, 160, 71));
         topPanel.setPreferredSize(new java.awt.Dimension(482, 200));
         topPanel.setLayout(new java.awt.GridLayout(2, 0));
 

@@ -7,7 +7,7 @@ package com.nepal.auctionhouse.dao.lot;
 
 import com.nepal.auctionhouse.entity.LotState;
 import com.nepal.auctionhouse.params.LotStateParams;
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,9 +56,13 @@ public class LotStateDAOImpl implements LotStateDAO {
     public int save(LotState t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?)")) {
+                + " values(?)",Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, t.getTitle());
-            id = pst.executeUpdate();
+            pst.executeUpdate();
+            
+            ResultSet rs = pst.getGeneratedKeys();
+            rs.next();
+            id = pst.getGeneratedKeys().getInt(1);
 
             Logy.d("LotState inserted successfully");
         }
@@ -78,8 +82,10 @@ public class LotStateDAOImpl implements LotStateDAO {
         int id;
         try (PreparedStatement pst = connection.prepareStatement(
                 "UPDATE " + tableName + " SET "
-                + LotStateParams.TITLE + "=?")) {
+                + LotStateParams.TITLE + "=? "
+                + "WHERE " + LotStateParams.ID + "=?")) {
             pst.setString(1, t.getTitle());
+            pst.setInt(2, t.getId());
             id = pst.executeUpdate();
 
             Logy.d("LotState updated successfully");

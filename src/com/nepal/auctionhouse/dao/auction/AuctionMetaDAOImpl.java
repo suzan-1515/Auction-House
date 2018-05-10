@@ -15,7 +15,7 @@ import com.nepal.auctionhouse.params.AuctionParams;
 import com.nepal.auctionhouse.params.LotParams;
 import com.nepal.auctionhouse.params.LotStateParams;
 import com.nepal.auctionhouse.params.LotTypeParams;
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -64,10 +64,14 @@ public class AuctionMetaDAOImpl implements AuctionMetaDAO {
     public int save(AuctionMeta t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?)")) {
+                + " values(?,?)",Statement.RETURN_GENERATED_KEYS)) {
             pst.setInt(1, t.getAuction().getId());
             pst.setInt(2, t.getLot().getId());
-            id = pst.executeUpdate();
+            pst.executeUpdate();
+            
+            ResultSet rs = pst.getGeneratedKeys();
+            rs.next();
+            id = pst.getGeneratedKeys().getInt(1);
 
             Logy.d("AuctionMeta inserted successfully");
         }
@@ -87,10 +91,12 @@ public class AuctionMetaDAOImpl implements AuctionMetaDAO {
         int id;
         try (PreparedStatement pst = connection.prepareStatement(
                 "UPDATE " + tableName + " SET "
-                + AuctionMetaParams.AUCTION + "=?"
-                + AuctionMetaParams.LOT + "=?")) {
+                + AuctionMetaParams.AUCTION + "=?,"
+                + AuctionMetaParams.LOT + "=? "
+                + "WHERE " + AuctionMetaParams.ID + "=?")) {
             pst.setInt(1, t.getAuction().getId());
             pst.setInt(2, t.getLot().getId());
+            pst.setInt(3, t.getId());
             id = pst.executeUpdate();
 
             Logy.d("AuctionMeta updated successfully");
@@ -187,8 +193,7 @@ public class AuctionMetaDAOImpl implements AuctionMetaDAO {
                 + "INNER JOIN ah_auction auc on am.m_auction = auc.a_id "
                 + "INNER JOIN ah_lot lot ON am.m_lot = lot.l_id "
                 + "INNER JOIN ah_lot_type typ ON lot.l_type = typ.t_id "
-                + "INNER JOIN ah_lot_state state on lot.l_state = state.s_id "
-                + "ORDER BY DESC am.m_id";
+                + "INNER JOIN ah_lot_state state on lot.l_state = state.s_id ";
         List<AuctionMeta> auctionInfoList = new ArrayList<>();
 
         try (Statement pst = connection.createStatement()) {

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.sujan.lms.common.util;
+package com.nepal.auctionhouse.util;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +14,7 @@ import java.util.logging.Logger;
  */
 public class Logy {
 
-    public static String TAG = "LMS";
+    public static String TAG = "Auction House";
 
     public static void init(String tag) {
         TAG = tag;

@@ -16,5 +16,5 @@ import java.sql.SQLException;
 public interface LotDAO extends DAO<Lot> {
 
     boolean isLotAvailable(Lot lot) throws SQLException;
-
+    
 }

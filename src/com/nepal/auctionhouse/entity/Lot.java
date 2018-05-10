@@ -5,8 +5,6 @@
  */
 package com.nepal.auctionhouse.entity;
 
-import java.sql.Date;
-
 /**
  *
  * @author Suzn
@@ -26,13 +24,16 @@ public final class Lot {
     }
 
     public Lot(int id, String description, LotType type, float reservePrice,
-            float hammerPrice, LotState state) {
+            LotState state) {
         this.id = id;
         this.description = description;
         this.type = type;
         this.reservePrice = reservePrice;
-        this.hammerPrice = hammerPrice;
         this.state = state;
+    }
+
+    public Lot(int id) {
+        this.id = id;
     }
 
     /**

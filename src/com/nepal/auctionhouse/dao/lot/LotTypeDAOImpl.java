@@ -7,7 +7,7 @@ package com.nepal.auctionhouse.dao.lot;
 
 import com.nepal.auctionhouse.entity.LotType;
 import com.nepal.auctionhouse.params.LotTypeParams;
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,9 +56,13 @@ public class LotTypeDAOImpl implements LotTypeDAO {
     public int save(LotType t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?)")) {
+                + " values(?)",Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, t.getTitle());
-            id = pst.executeUpdate();
+            pst.executeUpdate();
+            
+            ResultSet rs = pst.getGeneratedKeys();
+            rs.next();
+            id = pst.getGeneratedKeys().getInt(1);
 
             Logy.d("LotType inserted successfully");
         }
@@ -78,8 +82,10 @@ public class LotTypeDAOImpl implements LotTypeDAO {
         int id;
         try (PreparedStatement pst = connection.prepareStatement(
                 "UPDATE " + tableName + " SET "
-                + LotTypeParams.TITLE + "=?")) {
+                + LotTypeParams.TITLE + "=? "
+                + "WHERE " + LotTypeParams.ID + "=?")) {
             pst.setString(1, t.getTitle());
+            pst.setInt(2, t.getId());
             id = pst.executeUpdate();
 
             Logy.d("LotType updated successfully");
@@ -140,7 +146,7 @@ public class LotTypeDAOImpl implements LotTypeDAO {
      */
     @Override
     public List<LotType> findAll() throws SQLException {
-        String query = "SELECT * FROM `" + tableName + "` ORDER BY DESC " + LotTypeParams.ID;
+        String query = "SELECT * FROM `" + tableName + "` ORDER BY " + LotTypeParams.ID + " DESC";
         List<LotType> auctionInfoList = new ArrayList<>();
 
         try (Statement pst = connection.createStatement()) {

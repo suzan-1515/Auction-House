@@ -9,7 +9,7 @@ import com.nepal.auctionhouse.entity.LotType;
 import com.nepal.auctionhouse.entity.VATInfo;
 import com.nepal.auctionhouse.params.LotTypeParams;
 import com.nepal.auctionhouse.params.VATInfoParams;
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -58,10 +58,14 @@ public class VATInfoDAOImpl implements VATInfoDAO {
     public int save(VATInfo t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?)")) {
+                + " values(?,?)",Statement.RETURN_GENERATED_KEYS)) {
             pst.setFloat(1, t.getPercentage());
             pst.setInt(2, t.getLotType().getId());
-            id = pst.executeUpdate();
+            pst.executeUpdate();
+            
+            ResultSet rs = pst.getGeneratedKeys();
+            rs.next();
+            id = pst.getGeneratedKeys().getInt(1);
 
             Logy.d("VATInfo inserted successfully");
         }
@@ -81,10 +85,12 @@ public class VATInfoDAOImpl implements VATInfoDAO {
         int id;
         try (PreparedStatement pst = connection.prepareStatement(
                 "UPDATE " + tableName + " SET "
-                + VATInfoParams.PERCENT + "=?"
-                + VATInfoParams.LOT_TYPE + "=?")) {
+                + VATInfoParams.PERCENT + "=?,"
+                + VATInfoParams.LOT_TYPE + "=? "
+                + "WHERE " + VATInfoParams.ID + "=?")) {
             pst.setFloat(1, t.getPercentage());
             pst.setInt(2, t.getLotType().getId());
+            pst.setInt(3, t.getId());
             id = pst.executeUpdate();
 
             Logy.d("VATInfo updated successfully");
@@ -157,7 +163,7 @@ public class VATInfoDAOImpl implements VATInfoDAO {
         String query = "SELECT ah_vat_meta.v_id,ah_vat_meta.v_percent,ah_lot_type.t_id,"
                 + "ah_lot_type.t_title FROM `" + tableName + "` "
                 + "INNER JOIN ah_lot_type ON ah_lot_type.t_id = ah_vat_meta.v_id "
-                + "ORDER BY DESC ah_vat_meta.v_id";
+                + "ORDER BY ah_vat_meta.v_id DESC";
         List<VATInfo> auctionInfoList = new ArrayList<>();
 
         try (Statement pst = connection.createStatement()) {

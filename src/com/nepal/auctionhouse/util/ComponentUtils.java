@@ -5,7 +5,7 @@
  */
 package com.nepal.auctionhouse.util;
 
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.util.Logy;
 import java.awt.Component;
 import javax.swing.JPanel;
 

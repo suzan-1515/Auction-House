@@ -21,6 +21,10 @@ public final class Auction {
     public Auction() {
     }
 
+    public Auction(int id) {
+        this.id = id;
+    }
+
     /**
      * @return the id
      */

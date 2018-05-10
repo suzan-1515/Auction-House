@@ -10,7 +10,7 @@ import com.nepal.auctionhouse.entity.user.User;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.params.RoleParams;
 import com.nepal.auctionhouse.params.UserParams;
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,12 +59,18 @@ public class UserDAOImpl implements UserDAO {
     public int save(UserInfo t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?,?,?)")) {
-            pst.setString(1, t.getName());
-            pst.setString(2, t.getUsername());
-            pst.setString(3, t.getPassword());
-            pst.setInt(4, t.getRole().getId());
-            id = pst.executeUpdate();
+                + " values(?,?,?,?)",Statement.RETURN_GENERATED_KEYS)) {
+            pst.setInt(1, t.getId());
+            pst.setString(2, t.getName());
+            pst.setString(3, t.getUsername());
+            pst.setString(4, t.getPassword());
+            pst.setInt(5, t.getRole().getId());
+            pst.executeUpdate();
+            
+            ResultSet rs = pst.getGeneratedKeys();
+            rs.next();
+            id = pst.getGeneratedKeys().getInt(1);
+            
             Logy.d("User inserted successfully");
         }
 
@@ -83,8 +89,10 @@ public class UserDAOImpl implements UserDAO {
         int id;
         try (PreparedStatement pst = connection.prepareStatement(
                 "UPDATE " + tableName + " SET "
-                + UserParams.NAME + "=?")) {
+                + UserParams.NAME + "=? "
+                + "WHERE " + UserParams.ID + "=?")) {
             pst.setString(1, t.getName());
+            pst.setInt(2, t.getId());
             id = pst.executeUpdate();
             Logy.d("User updated successfully");
         }
@@ -156,7 +164,7 @@ public class UserDAOImpl implements UserDAO {
         String query = "SELECT usr.u_id, usr.u_name, usr.u_username, usr.u_password, "
                 + "role.r_id, role.r_title FROM " + UserParams.TABLE_NAME + " "
                 + "usr INNER JOIN " + RoleParams.TABLE_NAME + " role ON usr.u_role = role.r_id "
-                + " ORDER BY DESC usr.u_id";
+                + " ORDER BY usr.u_id DESC";
         List<UserInfo> userInfoList = new ArrayList<>();
 
         try (Statement pst = connection.createStatement()) {

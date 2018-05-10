@@ -17,6 +17,10 @@ public final class LotType {
     public LotType() {
     }
 
+    public LotType(int id) {
+        this.id = id;
+    }
+    
     public LotType(int id, String title) {
         this.id = id;
         this.title = title;

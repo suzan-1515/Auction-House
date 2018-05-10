@@ -11,7 +11,7 @@ import com.nepal.auctionhouse.entity.LotType;
 import com.nepal.auctionhouse.params.LotParams;
 import com.nepal.auctionhouse.params.LotStateParams;
 import com.nepal.auctionhouse.params.LotTypeParams;
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -59,14 +59,21 @@ public class LotDAOImpl implements LotDAO {
     @Override
     public int save(Lot t) throws SQLException {
         int id;
-        try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?,?,?,?)")) {
+        try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + " "
+                + "(" + LotParams.DESCRIPTION + ","
+                + LotParams.TYPE + ","
+                + LotParams.RESERVE_PRICE + ","
+                + LotParams.STATE + ") "
+                + "values(?,?,?,?)",Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, t.getDescription());
             pst.setInt(2, t.getType().getId());
-            pst.setFloat(3, t.getHammerPrice());
-            pst.setFloat(4, t.getReservePrice());
-            pst.setInt(5, t.getState().getId());
-            id = pst.executeUpdate();
+            pst.setFloat(3, t.getReservePrice());
+            pst.setInt(4, t.getState().getId());
+            pst.executeUpdate();
+            
+            ResultSet rs = pst.getGeneratedKeys();
+            rs.next();
+            id = pst.getGeneratedKeys().getInt(1);
 
             Logy.d("Lot inserted successfully");
         }
@@ -86,16 +93,16 @@ public class LotDAOImpl implements LotDAO {
         int id;
         try (PreparedStatement pst = connection.prepareStatement(
                 "UPDATE " + tableName + " SET "
-                + LotParams.DESCRIPTION + "=?"
-                + LotParams.TYPE + "=?"
-                + LotParams.HAMMER_PRICE + "=?"
-                + LotParams.RESERVE_PRICE + "=?"
-                + LotParams.STATE + "=?")) {
+                + LotParams.DESCRIPTION + "=?,"
+                + LotParams.TYPE + "=?,"
+                + LotParams.RESERVE_PRICE + "=?,"
+                + LotParams.STATE + "=? "
+                + "WHERE " + LotParams.ID + "=?")) {
             pst.setString(1, t.getDescription());
             pst.setInt(2, t.getType().getId());
-            pst.setFloat(3, t.getHammerPrice());
-            pst.setFloat(4, t.getReservePrice());
-            pst.setInt(5, t.getState().getId());
+            pst.setFloat(3, t.getReservePrice());
+            pst.setInt(4, t.getState().getId());
+            pst.setInt(5, t.getId());
             id = pst.executeUpdate();
 
             Logy.d("Lot updated successfully");
@@ -134,9 +141,9 @@ public class LotDAOImpl implements LotDAO {
     public Lot findById(int id) throws SQLException {
         String query = "SELECT ah_lot.l_id,ah_lot.l_description,ah_lot_type.t_id,"
                 + "ah_lot_type.t_title,ah_lot.l_reserve_price,ah_lot.l_hammer_price,"
-                + "ah_lot_state.s_id,ah_lot_state.s_title FROM `" + tableName + "`"
-                + "INNER JOIN ah_lot_type on ah_lot_type.t_id = ah_lot.l_type"
-                + "INNER JOIN ah_lot_state on ah_lot_state.s_id = ah_lot.l_state"
+                + "ah_lot_state.s_id,ah_lot_state.s_title FROM `" + tableName + "` "
+                + "INNER JOIN ah_lot_type on ah_lot_type.t_id = ah_lot.l_type "
+                + "INNER JOIN ah_lot_state on ah_lot_state.s_id = ah_lot.l_state "
                 + "WHERE ah_lot.l_id =? LIMIT 1";
         try (PreparedStatement pst = connection.prepareStatement(query)) {
             pst.setInt(1, id);
@@ -159,10 +166,9 @@ public class LotDAOImpl implements LotDAO {
                 lotState.setTitle(resultSet.getString(LotStateParams.TITLE));
                 lot.setState(lotState);
 
-                Logy.d("Lot fetched successfully");
-
                 return lot;
             }
+            Logy.d("Lot fetched successfully");
         }
 
         return null;
@@ -178,8 +184,7 @@ public class LotDAOImpl implements LotDAO {
                 + "ah_lot_type.t_title,ah_lot.l_reserve_price,ah_lot.l_hammer_price,"
                 + "ah_lot_state.s_id,ah_lot_state.s_title FROM `" + tableName + "` "
                 + "INNER JOIN ah_lot_type on ah_lot_type.t_id = ah_lot.l_type "
-                + "INNER JOIN ah_lot_state on ah_lot_state.s_id = ah_lot.l_state "
-                + "ORDER BY DESC ah_lot.l_id";
+                + "INNER JOIN ah_lot_state on ah_lot_state.s_id = ah_lot.l_state ";
         List<Lot> auctionInfoList = new ArrayList<>();
 
         try (Statement pst = connection.createStatement()) {
@@ -202,10 +207,10 @@ public class LotDAOImpl implements LotDAO {
                 lotState.setTitle(resultSet.getString(LotStateParams.TITLE));
                 lot.setState(lotState);
 
-                Logy.d("Lot fetched successfully");
-
                 auctionInfoList.add(lot);
             }
+
+            Logy.d("Lot fetched successfully");
         }
 
         return auctionInfoList;

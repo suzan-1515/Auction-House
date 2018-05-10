@@ -17,7 +17,7 @@ import com.nepal.auctionhouse.params.LotTypeParams;
 import com.nepal.auctionhouse.params.RoleParams;
 import com.nepal.auctionhouse.params.SaleParams;
 import com.nepal.auctionhouse.params.UserParams;
-import com.sujan.lms.common.util.Logy;
+import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -66,13 +66,17 @@ public class SaleDAOImpl implements SaleDAO {
     public int save(Sale t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?,?,?,?)")) {
+                + " values(?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS)) {
             pst.setInt(1, t.getLot().getId());
             pst.setFloat(2, t.getCommision());
             pst.setFloat(3, t.getVatAmount());
             pst.setInt(4, t.getUser().getId());
             pst.setDate(5, t.getDate());
-            id = pst.executeUpdate();
+            pst.executeUpdate();
+            
+            ResultSet rs = pst.getGeneratedKeys();
+            rs.next();
+            id = pst.getGeneratedKeys().getInt(1);
 
             Logy.d("Sale inserted successfully");
         }
@@ -92,14 +96,16 @@ public class SaleDAOImpl implements SaleDAO {
         int id;
         try (PreparedStatement pst = connection.prepareStatement(
                 "UPDATE " + tableName + " SET "
-                + SaleParams.LOT + "=?"
-                + SaleParams.COMMISSION + "=?"
-                + SaleParams.VAT_AMOUNT + "=?"
-                + SaleParams.USER + "=?")) {
+                + SaleParams.LOT + "=?,"
+                + SaleParams.COMMISSION + "=?,"
+                + SaleParams.VAT_AMOUNT + "=?,"
+                + SaleParams.USER + "=? "
+                + "WHERE " + SaleParams.ID + "=?")) {
             pst.setInt(1, t.getLot().getId());
             pst.setFloat(2, t.getCommision());
             pst.setFloat(3, t.getVatAmount());
-            pst.setInt(5, t.getUser().getId());
+            pst.setInt(4, t.getUser().getId());
+            pst.setInt(5, t.getId());
             id = pst.executeUpdate();
 
             Logy.d("Sale updated successfully");
@@ -209,7 +215,7 @@ public class SaleDAOImpl implements SaleDAO {
                 + "INNER JOIN ah_lot_state ON ah_lot_state.s_id = ah_lot.l_state\n"
                 + "INNER JOIN ah_user ON ah_user.u_id = ah_sales.s_user\n"
                 + "INNER JOIN ah_role On ah_role.r_id = ah_user.u_role\n"
-                + "ORDER BY DESC ah_sale.l_id";
+                + "ORDER BY ah_sale.l_id DESC";
         List<Sale> auctionInfoList = new ArrayList<>();
 
         try (Statement pst = connection.createStatement()) {
