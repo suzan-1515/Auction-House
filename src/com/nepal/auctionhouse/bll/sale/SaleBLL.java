@@ -5,10 +5,12 @@
  */
 package com.nepal.auctionhouse.bll.sale;
 
+import com.nepal.auctionhouse.bll.vat.VATBLL;
 import com.nepal.auctionhouse.dao.sale.SaleDAO;
 import com.nepal.auctionhouse.dao.sale.SaleDAOImpl;
 import com.nepal.auctionhouse.database.DBConnection;
 import com.nepal.auctionhouse.entity.Sale;
+import com.nepal.auctionhouse.entity.VATInfo;
 import com.nepal.auctionhouse.exception.DuplicateRecordException;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.SaleParams;
@@ -113,6 +115,23 @@ public class SaleBLL {
      */
     public static boolean isSaleAvailable(Sale sale) throws SQLException {
         return getSaleById(sale.getId()) != null;
+    }
+
+    public static float calculateCommission(Sale sale) {
+        return (sale.getLot().getHammerPrice() * SaleParams.COMMISSION_PERCENTAGE) / 100;
+    }
+
+    public static float calculateVAT(Sale sale) throws SQLException {
+        float amount = 0.0f;
+        VATInfo vATInfo = new VATInfo();
+        vATInfo.setLotType(sale.getLot().getType());
+
+        if (VATBLL.IsVATApplicable(vATInfo)) {
+            vATInfo = VATBLL.getVATInfoByLotType(sale.getLot().getType());
+            amount = vATInfo.getPercentage();
+        }
+
+        return (amount * sale.getLot().getHammerPrice()) / 100;
     }
 
 }

@@ -10,6 +10,7 @@ import com.nepal.auctionhouse.entity.Lot;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.LotParams;
+import com.nepal.auctionhouse.ui.BaseUserPanel;
 import com.nepal.auctionhouse.util.Logy;
 import com.nepal.auctionhouse.util.Utils;
 import com.nepal.auctionhouse.view.LotView;
@@ -18,7 +19,6 @@ import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -26,7 +26,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Suzn
  */
-public final class LotAllPanel extends JPanel implements LotView<Lot> {
+public final class LotAllPanel extends BaseUserPanel implements LotView<Lot> {
 
     /**
      * Creates new form LotPanel
@@ -35,7 +35,8 @@ public final class LotAllPanel extends JPanel implements LotView<Lot> {
      */
     public LotAllPanel(UserInfo userInfo) {
         initComponents();
-        Logy.d("Admin lot panel initialized");
+        setupUserView(userInfo);
+        Logy.d("lot all panel initialized");
     }
 
     /**
@@ -362,6 +363,14 @@ public final class LotAllPanel extends JPanel implements LotView<Lot> {
         table.setModel(tableModel);
         javax.swing.table.TableRowSorter<javax.swing.table.TableModel> rowSorter = new javax.swing.table.TableRowSorter<>(table.getModel());
         table.setRowSorter(rowSorter);
+    }
+
+    @Override
+    protected void setupAdminView() {
+    }
+
+    @Override
+    protected void setupUserView() {
     }
 
 }

@@ -13,9 +13,11 @@ public class SaleParams {
 
     public static final String TABLE_NAME = "ah_sales";
 
+    public static final float COMMISSION_PERCENTAGE = 10f;
+
     public static final String ID = "s_id";
     public static final String LOT = "s_lot";
-    public static final String COMMISSION = "s_commission";
+    public static final String COMMISSION = "s_commission_amount";
     public static final String VAT_AMOUNT = "s_vat_amount";
     public static final String USER = "s_user";
     public static final String CREATED_AT = "s_created_at";

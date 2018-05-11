@@ -20,7 +20,7 @@ import javax.swing.UnsupportedLookAndFeelException;
  *
  * @author Suzn
  */
-public final class AdminDashboard extends BaseDashboard {
+public final class Dashboard extends BaseDashboard {
 
     private HomePanel homePanel;
     private AuctionPanel auctionPanel;
@@ -29,14 +29,16 @@ public final class AdminDashboard extends BaseDashboard {
     private final UserInfo userInfo;
 
     /**
-     * Creates new form AdminDashboard
+     * Creates new form Dashboard
      *
      * @param userInfo
      */
-    public AdminDashboard(UserInfo userInfo) {
+    public Dashboard(UserInfo userInfo) {
+        super(String.format("LBEF Auction House - %s Panel", userInfo.getRole().getTitle()));
         initComponents();
         setLocationRelativeTo(null);
         this.userInfo = userInfo;
+        setupUserView(userInfo);
         ComponentUtils.addToPanel(this.centerPanel, getHomePanel());
         Logy.d("Dashboard panel initialized");
     }
@@ -76,7 +78,6 @@ public final class AdminDashboard extends BaseDashboard {
         logoutButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("LBEF Auction House - Admin Panel");
         setExtendedState(6);
         setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/icon.png")));
         setMinimumSize(new java.awt.Dimension(720, 630));
@@ -533,7 +534,7 @@ public final class AdminDashboard extends BaseDashboard {
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(() -> {
-            new AdminDashboard(new UserInfo()).setVisible(true);
+            new Dashboard(new UserInfo()).setVisible(true);
         });
     }
 
@@ -565,5 +566,16 @@ public final class AdminDashboard extends BaseDashboard {
     private javax.swing.JPanel topPanel;
     private javax.swing.JButton userMenuButton;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    protected void setupAdminView() {
+        Logy.d("setting up admin view");
+    }
+
+    @Override
+    protected void setupUserView() {
+        Logy.d("setting up user view");
+        userMenuButton.setVisible(false);
+    }
 
 }

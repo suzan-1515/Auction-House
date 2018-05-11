@@ -9,13 +9,13 @@ package com.nepal.auctionhouse.entity;
  *
  * @author Suzn
  */
-public final class AuctionMeta {
+public final class LotMeta {
 
     private int id;
     private Auction auction;
     private Lot lot;
 
-    public AuctionMeta() {
+    public LotMeta() {
         auction = new Auction();
         lot = new Lot();
     }

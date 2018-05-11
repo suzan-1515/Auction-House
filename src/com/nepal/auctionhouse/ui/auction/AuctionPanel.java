@@ -10,6 +10,7 @@ import com.nepal.auctionhouse.entity.Auction;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.AuctionParams;
+import com.nepal.auctionhouse.ui.BaseUserPanel;
 import com.nepal.auctionhouse.util.Utils;
 import com.nepal.auctionhouse.view.AuctionView;
 import com.nepal.auctionhouse.widget.Alert;
@@ -19,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -27,7 +27,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Suzn
  */
-public final class AuctionPanel extends JPanel
+public final class AuctionPanel extends BaseUserPanel
         implements AuctionView<Auction> {
 
     private List<Auction> auctionList;
@@ -41,6 +41,7 @@ public final class AuctionPanel extends JPanel
     public AuctionPanel(UserInfo userInfo) {
         initComponents();
         this.userInfo = userInfo;
+        setupUserView(userInfo);
         auctionList = new ArrayList<>();
     }
 
@@ -417,6 +418,18 @@ public final class AuctionPanel extends JPanel
     @Override
     public void onViewActivated() {
         loadTableData();
+    }
+
+    @Override
+    protected void setupAdminView() {
+        
+    }
+
+    @Override
+    protected void setupUserView() {
+        addAuctionButton.setVisible(false);
+        updateAuctionButton.setVisible(false);
+        deleteAuctionButton.setVisible(false);
     }
 
 }

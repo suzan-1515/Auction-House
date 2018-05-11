@@ -7,20 +7,20 @@ package com.nepal.auctionhouse.ui.lot.unassigned;
 
 import com.nepal.auctionhouse.bll.lot.LotBLL;
 import com.nepal.auctionhouse.bll.lot.LotStateBLL;
-import com.nepal.auctionhouse.entity.AuctionMeta;
+import com.nepal.auctionhouse.entity.LotMeta;
 import com.nepal.auctionhouse.entity.Lot;
 import com.nepal.auctionhouse.entity.LotState;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.LotParams;
 import com.nepal.auctionhouse.params.LotStateParams;
+import com.nepal.auctionhouse.ui.BaseUserPanel;
 import com.nepal.auctionhouse.util.Logy;
 import com.nepal.auctionhouse.view.LotView;
 import com.nepal.auctionhouse.widget.Alert;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -28,7 +28,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Suzn
  */
-public final class LotUnassignedPanel extends JPanel implements LotView<Lot> {
+public final class LotUnassignedPanel extends BaseUserPanel implements LotView<Lot> {
 
     /**
      * Creates new form LotUnassignedPanel
@@ -37,6 +37,7 @@ public final class LotUnassignedPanel extends JPanel implements LotView<Lot> {
      */
     public LotUnassignedPanel(UserInfo userInfo) {
         initComponents();
+        setupUserView(userInfo);
         Logy.d("Admin lotUnassigned panel initialized");
     }
 
@@ -194,7 +195,7 @@ public final class LotUnassignedPanel extends JPanel implements LotView<Lot> {
                 if (u != null) {
                     if (LotBLL.isLotUnassigned(u)) {
                         LotAssignDialog lotUnassignedAssignDialog = new LotAssignDialog((JFrame) SwingUtilities.getWindowAncestor(this), true, u);
-                        lotUnassignedAssignDialog.setItemUpdatedListener((AuctionMeta auctionMeta) -> {
+                        lotUnassignedAssignDialog.setItemUpdatedListener((LotMeta auctionMeta) -> {
                             updateLotState(auctionMeta.getLot());
                             loadTableData();
                         });
@@ -306,6 +307,15 @@ public final class LotUnassignedPanel extends JPanel implements LotView<Lot> {
         table.setModel(tableModel);
         javax.swing.table.TableRowSorter<javax.swing.table.TableModel> rowSorter = new javax.swing.table.TableRowSorter<>(table.getModel());
         table.setRowSorter(rowSorter);
+    }
+
+    @Override
+    protected void setupAdminView() {
+    }
+
+    @Override
+    protected void setupUserView() {
+        assignLotButton.setVisible(false);
     }
 
 }

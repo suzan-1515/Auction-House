@@ -9,6 +9,7 @@ import com.nepal.auctionhouse.dao.lot.LotDAO;
 import com.nepal.auctionhouse.dao.lot.LotDAOImpl;
 import com.nepal.auctionhouse.database.DBConnection;
 import com.nepal.auctionhouse.entity.Lot;
+import com.nepal.auctionhouse.entity.LotMeta;
 import com.nepal.auctionhouse.exception.DuplicateRecordException;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.LotParams;
@@ -169,6 +170,16 @@ public class LotBLL {
         LotDAO lotDAO = new LotDAOImpl(con, LotParams.TABLE_NAME);
 
         return lotDAO.getAllLotByState(LotStateParams.STATE_SOLD);
+    }
+
+    /**
+     *
+     * @param id
+     * @return
+     * @throws SQLException
+     */
+    public static LotMeta getLotMetaByLotId(int id) throws SQLException {
+        return LotMetaBLL.getLotMetaByLotId(id);
     }
 
 }

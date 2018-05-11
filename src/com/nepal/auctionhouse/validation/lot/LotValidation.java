@@ -68,4 +68,49 @@ public class LotValidation extends BaseValidation {
         return true;
     }
 
+    public boolean isBidLotFormValid(String hammerPrice, String reservePrice) {
+        Logy.d("Validating lot bid form");
+
+        float hp;
+        float rp;
+
+        if (isStringEmptyOrNull(reservePrice)) {
+            Logy.d("Reserve price not valid");
+            Alert.showError(component, "Reserve price field cannot be empty.");
+            return false;
+        } else {
+            try {
+                rp = Float.parseFloat(reservePrice);
+            } catch (NumberFormatException ex) {
+                Logy.d("Reserve price invalid value");
+                Alert.showError(component, "Reserve price invalid value.");
+                return false;
+            }
+        }
+
+        if (isStringEmptyOrNull(hammerPrice)) {
+            Logy.d("Hammer price not valid");
+            Alert.showError(component, "Hammer price field cannot be empty.");
+            return false;
+        } else {
+            try {
+                hp = Float.parseFloat(hammerPrice);
+            } catch (NumberFormatException ex) {
+                Logy.d("Hammer price invalid value");
+                Alert.showError(component, "Hammer price invalid value.");
+                return false;
+            }
+        }
+
+        if (hp < rp) {
+            Logy.d("Hammer price must be greater or equal to reserve price.");
+            Alert.showError(component, "Hammer price must be greater or equal to reserve price.");
+            return false;
+        }
+
+        Logy.d("Lot bid form is validated");
+
+        return true;
+    }
+
 }

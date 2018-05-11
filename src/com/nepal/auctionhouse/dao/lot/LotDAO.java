@@ -7,6 +7,7 @@ package com.nepal.auctionhouse.dao.lot;
 
 import com.nepal.auctionhouse.dao.DAO;
 import com.nepal.auctionhouse.entity.Lot;
+import com.nepal.auctionhouse.entity.LotMeta;
 import java.sql.SQLException;
 import java.util.List;
 

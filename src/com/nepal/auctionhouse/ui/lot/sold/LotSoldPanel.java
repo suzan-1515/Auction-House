@@ -9,12 +9,12 @@ import com.nepal.auctionhouse.bll.sale.SaleBLL;
 import com.nepal.auctionhouse.entity.Sale;
 import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.params.LotParams;
+import com.nepal.auctionhouse.ui.BaseUserPanel;
 import com.nepal.auctionhouse.util.Logy;
 import com.nepal.auctionhouse.view.LotView;
 import com.nepal.auctionhouse.widget.Alert;
 import java.sql.SQLException;
 import java.util.List;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -22,7 +22,7 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Suzn
  */
-public final class LotSoldPanel extends JPanel implements LotView<Sale> {
+public final class LotSoldPanel extends BaseUserPanel implements LotView<Sale> {
 
     /**
      * Creates new form LotSoldPanel
@@ -31,6 +31,7 @@ public final class LotSoldPanel extends JPanel implements LotView<Sale> {
      */
     public LotSoldPanel(UserInfo userInfo) {
         initComponents();
+        setupUserView(userInfo);
         Logy.d("Admin lotSold panel initialized");
     }
 
@@ -192,9 +193,8 @@ public final class LotSoldPanel extends JPanel implements LotView<Sale> {
     public void onLotRowDataAdd(Sale lotSold) {
         ((DefaultTableModel) table.getModel()).insertRow(0, new Object[]{
             lotSold.getLot().getId(),
-            lotSold.getLot().getType(),
             lotSold.getLot().getDescription(),
-            lotSold.getLot().getState().getTitle(),
+            lotSold.getLot().getType().getTitle(),
             lotSold.getLot().getReservePrice(),
             lotSold.getLot().getHammerPrice(),
             lotSold.getCommision(),
@@ -253,6 +253,14 @@ public final class LotSoldPanel extends JPanel implements LotView<Sale> {
     private String calculateCustomerPayment(float reservePrice, float hammerPrice,
             float commision, float vatAmount) {
         return String.valueOf(hammerPrice - commision - vatAmount);
+    }
+
+    @Override
+    protected void setupAdminView() {
+    }
+
+    @Override
+    protected void setupUserView() {
     }
 
 }

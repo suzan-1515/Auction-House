@@ -11,7 +11,7 @@ package com.nepal.auctionhouse.params;
  */
 public class VATInfoParams {
 
-    public static final String TABLE_NAME = "ah_auction_meta";
+    public static final String TABLE_NAME = "ah_vat_meta";
 
     public static final String ID = "v_id";
     public static final String PERCENT = "v_percent";

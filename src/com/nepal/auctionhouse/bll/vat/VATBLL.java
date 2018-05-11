@@ -8,6 +8,7 @@ package com.nepal.auctionhouse.bll.vat;
 import com.nepal.auctionhouse.dao.vat.VATInfoDAO;
 import com.nepal.auctionhouse.dao.vat.VATInfoDAOImpl;
 import com.nepal.auctionhouse.database.DBConnection;
+import com.nepal.auctionhouse.entity.LotType;
 import com.nepal.auctionhouse.entity.VATInfo;
 import com.nepal.auctionhouse.exception.DuplicateRecordException;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
@@ -120,6 +121,13 @@ public class VATBLL {
         VATInfoDAO vatInfoDAO = new VATInfoDAOImpl(con, VATInfoParams.TABLE_NAME);
 
         return vatInfoDAO.isVATApplicable(vATInfo);
+    }
+
+    public static VATInfo getVATInfoByLotType(LotType type) throws SQLException {
+        Connection con = DBConnection.geConnection();
+        VATInfoDAO vatInfoDAO = new VATInfoDAOImpl(con, VATInfoParams.TABLE_NAME);
+
+        return vatInfoDAO.findVATByLotType(type);
     }
 
 }

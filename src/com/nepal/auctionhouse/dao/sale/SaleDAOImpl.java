@@ -142,7 +142,8 @@ public class SaleDAOImpl implements SaleDAO {
      */
     @Override
     public Sale findById(int id) throws SQLException {
-        String query = "SELECT ah_sales.s_id,ah_lot.l_id,ah_lot.l_description,ah_lot_type.t_id,ah_lot_type.t_title,ah_lot.l_reserve_price,\n"
+        String query = "SELECT ah_sales.s_id,ah_sales.s_commission_amount,ah_sales.s_vat_amount,"
+                + "ah_sales.s_created_at,ah_lot.l_id,ah_lot.l_description,ah_lot_type.t_id,ah_lot_type.t_title,ah_lot.l_reserve_price,\n"
                 + "ah_lot.l_hammer_price,ah_lot_state.s_id,ah_lot_state.s_title,ah_user.u_id,ah_user.u_name,ah_user.u_username,\n"
                 + "ah_user.u_password,ah_role.r_id,ah_role.r_title FROM `" + tableName + "` \n"
                 + "INNER JOIN ah_lot ON ah_lot.l_id = ah_sales.s_lot\n"
@@ -207,7 +208,8 @@ public class SaleDAOImpl implements SaleDAO {
      */
     @Override
     public List<Sale> findAll() throws SQLException {
-        String query = "SELECT ah_sales.s_id,ah_lot.l_id,ah_lot.l_description,ah_lot_type.t_id,ah_lot_type.t_title,ah_lot.l_reserve_price,\n"
+        String query = "SELECT ah_sales.s_id,ah_sales.s_commission_amount,ah_sales.s_vat_amount,"
+                + "ah_sales.s_created_at,ah_lot.l_id,ah_lot.l_description,ah_lot_type.t_id,ah_lot_type.t_title,ah_lot.l_reserve_price,\n"
                 + "ah_lot.l_hammer_price,ah_lot_state.s_id,ah_lot_state.s_title,ah_user.u_id,ah_user.u_name,ah_user.u_username,\n"
                 + "ah_user.u_password,ah_role.r_id,ah_role.r_title FROM `" + tableName + "` \n"
                 + "INNER JOIN ah_lot ON ah_lot.l_id = ah_sales.s_lot\n"

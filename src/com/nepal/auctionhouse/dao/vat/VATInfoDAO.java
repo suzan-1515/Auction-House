@@ -6,6 +6,7 @@
 package com.nepal.auctionhouse.dao.vat;
 
 import com.nepal.auctionhouse.dao.DAO;
+import com.nepal.auctionhouse.entity.LotType;
 import com.nepal.auctionhouse.entity.VATInfo;
 import java.sql.SQLException;
 
@@ -18,5 +19,7 @@ public interface VATInfoDAO extends DAO<VATInfo> {
     boolean isVATInfoAvailable(VATInfo vatInfo) throws SQLException;
 
     boolean isVATApplicable(VATInfo vATInfo) throws SQLException;
+
+    VATInfo findVATByLotType(LotType lotType) throws SQLException;
 
 }

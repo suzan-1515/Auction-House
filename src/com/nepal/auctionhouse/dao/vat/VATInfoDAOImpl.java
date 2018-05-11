@@ -58,11 +58,11 @@ public class VATInfoDAOImpl implements VATInfoDAO {
     public int save(VATInfo t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(null,?,?)",Statement.RETURN_GENERATED_KEYS)) {
+                + " values(null,?,?)", Statement.RETURN_GENERATED_KEYS)) {
             pst.setFloat(1, t.getPercentage());
             pst.setInt(2, t.getLotType().getId());
             pst.executeUpdate();
-            
+
             ResultSet rs = pst.getGeneratedKeys();
             rs.next();
             id = rs.getInt(1);
@@ -200,6 +200,35 @@ public class VATInfoDAOImpl implements VATInfoDAO {
         }
 
         return false;
+    }
+
+    @Override
+    public VATInfo findVATByLotType(LotType lt) throws SQLException {
+        String query = "SELECT ah_vat_meta.v_id,ah_vat_meta.v_percent,ah_lot_type.t_id,"
+                + "ah_lot_type.t_title FROM `" + tableName + "` "
+                + "INNER JOIN ah_lot_type ON ah_lot_type.t_id = ah_vat_meta.v_id "
+                + "WHERE ah_vat_meta.v_lot_type =? LIMIT 1";
+        try (PreparedStatement pst = connection.prepareStatement(query)) {
+            pst.setInt(1, lt.getId());
+            ResultSet resultSet = pst.executeQuery();
+            while (resultSet.next()) {
+                VATInfo vatInfo = new VATInfo();
+                vatInfo.setId(resultSet.getInt(VATInfoParams.ID));
+                vatInfo.setPercentage(resultSet.getFloat(VATInfoParams.PERCENT));
+
+                LotType lotType = new LotType();
+                lotType.setId(resultSet.getInt(LotTypeParams.ID));
+                lotType.setTitle(resultSet.getString(LotTypeParams.TITLE));
+
+                vatInfo.setLotType(lotType);
+
+                Logy.d("VATInfo fetched successfully");
+
+                return vatInfo;
+            }
+        }
+
+        return null;
     }
 
 }

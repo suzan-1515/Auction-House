@@ -3,63 +3,70 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nepal.auctionhouse.ui.lot.unassigned;
+package com.nepal.auctionhouse.ui.lot.assign;
 
-import com.nepal.auctionhouse.bll.auction.AuctionBLL;
-import com.nepal.auctionhouse.bll.lot.LotMetaBLL;
-import com.nepal.auctionhouse.entity.Auction;
-import com.nepal.auctionhouse.entity.LotMeta;
+import com.nepal.auctionhouse.bll.sale.SaleBLL;
 import com.nepal.auctionhouse.entity.Lot;
+import com.nepal.auctionhouse.entity.LotMeta;
+import com.nepal.auctionhouse.entity.Sale;
+import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.exception.DuplicateRecordException;
 import com.nepal.auctionhouse.util.Logy;
 import com.nepal.auctionhouse.validation.lot.LotValidation;
 import com.nepal.auctionhouse.widget.Alert;
-import java.awt.Component;
+import java.awt.Toolkit;
 import java.sql.Date;
 import java.sql.SQLException;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import javax.swing.SwingUtilities;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import javax.swing.text.DocumentFilter.FilterBypass;
 
 /**
  *
  * @author Suzn
  */
-public class LotAssignDialog extends javax.swing.JDialog {
+public class LotBidDialog extends javax.swing.JDialog {
 
     private final LotValidation validation;
     private ItemUpdatedListener itemUpdatedListener;
-    private final Lot lot;
+    private final LotMeta lotMeta;
+    private final UserInfo userInfo;
 
-    private void notifyDataSetChanged(LotMeta auctionMeta) {
+    private void notifyDataSetChanged(Sale sale) {
         if (getItemUpdatedListener() != null) {
-            getItemUpdatedListener().onItemUpdated(auctionMeta);
+            getItemUpdatedListener().onItemUpdated(sale);
         }
     }
 
     private void fillFields() {
-        lotNumberTextField.setText(String.valueOf(lot.getId()));
+        lotNumberTextField.setText(String.valueOf(lotMeta.getLot().getId()));
+        auctionNumberTextField.setText(String.valueOf(lotMeta.getAuction().getId()));
+        reservePriceTextField.setText(String.valueOf(lotMeta.getLot().getReservePrice()));
     }
 
     public interface ItemUpdatedListener {
 
-        void onItemUpdated(LotMeta auctionMeta);
+        void onItemUpdated(Sale sale);
     }
 
     /**
-     * Creates new form LotInsertDialog
+     * Creates new form LotMetaInsertDialog
      *
      * @param parent
      * @param modal
-     * @param lot
+     * @param lotMeta
+     * @param userInfo
      */
-    public LotAssignDialog(java.awt.Frame parent, boolean modal, Lot lot) {
+    public LotBidDialog(java.awt.Frame parent, boolean modal, LotMeta lotMeta,
+            UserInfo userInfo) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
-        this.lot = lot;
+        this.lotMeta = lotMeta;
+        this.userInfo = userInfo;
         validation = new LotValidation(this);
-        this.loadData();
         this.fillFields();
     }
 
@@ -83,8 +90,12 @@ public class LotAssignDialog extends javax.swing.JDialog {
         jPanel5 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jLabel6 = new javax.swing.JLabel();
+        auctionNumberTextField = new javax.swing.JTextField();
         lotNumberTextField = new javax.swing.JTextField();
-        auctionComboBox = new javax.swing.JComboBox<Auction>();
+        jLabel7 = new javax.swing.JLabel();
+        reservePriceTextField = new javax.swing.JTextField();
+        jLabel8 = new javax.swing.JLabel();
+        hammerPriceTextField = new javax.swing.JTextField();
         jPanel6 = new javax.swing.JPanel();
         cancelButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
@@ -113,7 +124,7 @@ public class LotAssignDialog extends javax.swing.JDialog {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(51, 51, 51));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Assign Lot");
+        jLabel1.setText("Bid Lot");
         jLabel1.setPreferredSize(new java.awt.Dimension(113, 50));
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -122,7 +133,7 @@ public class LotAssignDialog extends javax.swing.JDialog {
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 406, Short.MAX_VALUE)
+                .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 352, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
@@ -138,9 +149,9 @@ public class LotAssignDialog extends javax.swing.JDialog {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
-                .addContainerGap(137, Short.MAX_VALUE)
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(98, Short.MAX_VALUE))
+                .addContainerGap(140, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(140, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -163,22 +174,78 @@ public class LotAssignDialog extends javax.swing.JDialog {
 
         jLabel3.setText("Lot Number");
 
-        jLabel6.setText("Upcoming Auction");
+        jLabel6.setText("Auction Number");
+
+        auctionNumberTextField.setEditable(false);
 
         lotNumberTextField.setEditable(false);
 
-        auctionComboBox.setModel(new javax.swing.DefaultComboBoxModel<Auction>());
-        auctionComboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
-                super.getListCellRendererComponent(jlist, o, i, bln, bln1);
-                if (o != null) {
-                    Auction auction = (Auction) o;
-                    setText(String.format("No-%d Date: %s", auction.getId(), auction.getDate()));
+        jLabel7.setText("Reserve Price");
+
+        reservePriceTextField.setEditable(false);
+        AbstractDocument document = (AbstractDocument) reservePriceTextField.getDocument();
+        final int maxCharacters = 10;
+        document.setDocumentFilter(new DocumentFilter() {
+            public void replace(FilterBypass fb, int offs, int length,
+                String str, AttributeSet a) throws BadLocationException {
+
+                String text = fb.getDocument().getText(0,
+                    fb.getDocument().getLength());
+                text += str;
+                if ((fb.getDocument().getLength() + str.length() - length) <= maxCharacters
+                    && text.matches("^[0-9]+[.]?[0-9]{0,1}$")) {
+                    super.replace(fb, offs, length, str, a);
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
                 }
-                return this;
             }
 
+            public void insertString(FilterBypass fb, int offs, String str,
+                AttributeSet a) throws BadLocationException {
+
+                String text = fb.getDocument().getText(0,
+                    fb.getDocument().getLength());
+                text += str;
+                if ((fb.getDocument().getLength() + str.length()) <= maxCharacters
+                    && text.matches("^[0-9]+[.]?[0-9]{0,1}$")) {
+                    super.insertString(fb, offs, str, a);
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
+                }
+            }
+        });
+
+        jLabel8.setText("Hammer Price");
+
+        AbstractDocument documentHammer = (AbstractDocument) hammerPriceTextField.getDocument();
+        documentHammer.setDocumentFilter(new DocumentFilter() {
+            public void replace(FilterBypass fb, int offs, int length,
+                String str, AttributeSet a) throws BadLocationException {
+
+                String text = fb.getDocument().getText(0,
+                    fb.getDocument().getLength());
+                text += str;
+                if ((fb.getDocument().getLength() + str.length() - length) <= maxCharacters
+                    && text.matches("^[0-9]+[.]?[0-9]{0,1}$")) {
+                    super.replace(fb, offs, length, str, a);
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
+                }
+            }
+
+            public void insertString(FilterBypass fb, int offs, String str,
+                AttributeSet a) throws BadLocationException {
+
+                String text = fb.getDocument().getText(0,
+                    fb.getDocument().getLength());
+                text += str;
+                if ((fb.getDocument().getLength() + str.length()) <= maxCharacters
+                    && text.matches("^[0-9]+[.]?[0-9]{0,1}$")) {
+                    super.insertString(fb, offs, str, a);
+                } else {
+                    Toolkit.getDefaultToolkit().beep();
+                }
+            }
         });
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
@@ -186,14 +253,20 @@ public class LotAssignDialog extends javax.swing.JDialog {
         jPanel5Layout.setHorizontalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(auctionComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lotNumberTextField))
-                .addContainerGap())
+                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, 0)
+                        .addComponent(jLabel8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addGap(10, 10, 10)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(lotNumberTextField)
+                    .addComponent(auctionNumberTextField)
+                    .addComponent(reservePriceTextField)
+                    .addComponent(hammerPriceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 171, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -205,13 +278,24 @@ public class LotAssignDialog extends javax.swing.JDialog {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(auctionComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                    .addComponent(auctionNumberTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(reservePriceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(hammerPriceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
-        jPanel5Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {auctionComboBox, jLabel6});
+        jPanel5Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {auctionNumberTextField, jLabel6});
+
+        jPanel5Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel7, reservePriceTextField});
 
         jPanel5Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {jLabel3, lotNumberTextField});
+
+        jPanel5Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {hammerPriceTextField, jLabel8});
 
         jPanel6.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(255, 51, 0)));
         jPanel6.setForeground(new java.awt.Color(255, 255, 255));
@@ -238,7 +322,7 @@ public class LotAssignDialog extends javax.swing.JDialog {
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(212, Short.MAX_VALUE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -260,14 +344,12 @@ public class LotAssignDialog extends javax.swing.JDialog {
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 8, Short.MAX_VALUE)))
-                .addContainerGap())
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(47, 47, 47))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -283,15 +365,15 @@ public class LotAssignDialog extends javax.swing.JDialog {
         centerPanelLayout.setHorizontalGroup(
             centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, centerPanelLayout.createSequentialGroup()
-                .addContainerGap(137, Short.MAX_VALUE)
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 428, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(98, Short.MAX_VALUE))
+                .addContainerGap(140, Short.MAX_VALUE)
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(140, Short.MAX_VALUE))
         );
         centerPanelLayout.setVerticalGroup(
             centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(centerPanelLayout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(80, 80, 80))
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 84, Short.MAX_VALUE))
         );
 
         rootPanel.add(centerPanel, java.awt.BorderLayout.CENTER);
@@ -307,19 +389,25 @@ public class LotAssignDialog extends javax.swing.JDialog {
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
 
-        if (validation.isAssignLotFormValid(auctionComboBox.getSelectedItem(),
-                lotNumberTextField.getText())) {
+        if (validation.isBidLotFormValid(hammerPriceTextField.getText(),
+                reservePriceTextField.getText())) {
 
-            LotMeta lotMeta = new LotMeta();
-            lotMeta.setLot(lot);
-            Auction auction = (Auction) auctionComboBox.getSelectedItem();
-            lotMeta.setAuction(auction);
+            Sale sale = new Sale();
+
+            Lot lot = lotMeta.getLot();
+            lot.setHammerPrice(Float.valueOf(hammerPriceTextField.getText()));
+            sale.setLot(lot);
+            sale.setUser(userInfo);
 
             try {
-                int id = LotMetaBLL.insertLotMeta(lotMeta);
-                lotMeta.setId(id);
-                notifyDataSetChanged(lotMeta);
-                Alert.showInformation(this, "Lot assigned successfully!");
+                sale.setCommision(SaleBLL.calculateCommission(sale));
+                sale.setVatAmount(SaleBLL.calculateVAT(sale));
+                sale.setDate(new Date(new java.util.Date().getTime()));
+
+                int id = SaleBLL.insertSale(sale);
+                sale.setId(id);
+                notifyDataSetChanged(sale);
+                Alert.showInformation(this, "Lot buyed successfully!");
                 this.dispose();
             } catch (SQLException | DuplicateRecordException ex) {
                 Logy.e(ex);
@@ -329,31 +417,16 @@ public class LotAssignDialog extends javax.swing.JDialog {
 
     }//GEN-LAST:event_saveButtonActionPerformed
 
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(() -> {
-            LotAssignDialog dialog = new LotAssignDialog(new javax.swing.JFrame(), true, new Lot());
-            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                @Override
-                public void windowClosing(java.awt.event.WindowEvent e) {
-                    System.exit(0);
-                }
-            });
-            dialog.setVisible(true);
-        });
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JComboBox<Auction> auctionComboBox;
+    private javax.swing.JTextField auctionNumberTextField;
     private javax.swing.JButton cancelButton;
     private javax.swing.JPanel centerPanel;
+    private javax.swing.JTextField hammerPriceTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -361,26 +434,11 @@ public class LotAssignDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
     private javax.swing.JTextField lotNumberTextField;
+    private javax.swing.JTextField reservePriceTextField;
     private javax.swing.JPanel rootPanel;
     private javax.swing.JButton saveButton;
     private javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
-
-    private void loadData() {
-        SwingUtilities.invokeLater(() -> {
-
-            try {
-                AuctionBLL.getUpcomingAuction(new Date(new java.util.Date().getTime())).stream()
-                        .forEach(auction -> {
-                            auctionComboBox.addItem(auction);
-                        });
-
-            } catch (SQLException ex) {
-                Logy.e(ex);
-                Alert.showError(this, ex.getMessage());
-            }
-        });
-    }
 
     /**
      * @return the itemUpdatedListener

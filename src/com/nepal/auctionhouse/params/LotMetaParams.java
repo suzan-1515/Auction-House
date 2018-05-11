@@ -9,9 +9,9 @@ package com.nepal.auctionhouse.params;
  *
  * @author Suzn
  */
-public class AuctionMetaParams {
+public class LotMetaParams {
 
-    public static final String TABLE_NAME = "ah_auction_meta";
+    public static final String TABLE_NAME = "ah_lot_meta";
 
     public static final String ID = "m_id";
     public static final String AUCTION = "m_auction";

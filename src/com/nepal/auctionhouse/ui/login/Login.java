@@ -8,7 +8,7 @@ package com.nepal.auctionhouse.ui.login;
 import com.nepal.auctionhouse.bll.user.UserBLL;
 import com.nepal.auctionhouse.entity.user.User;
 import com.nepal.auctionhouse.entity.user.UserInfo;
-import com.nepal.auctionhouse.ui.dashboard.AdminDashboard;
+import com.nepal.auctionhouse.ui.dashboard.Dashboard;
 import com.nepal.auctionhouse.validation.user.UserValidation;
 import com.nepal.auctionhouse.widget.Alert;
 import com.nepal.auctionhouse.util.Logy;
@@ -270,11 +270,11 @@ public final class Login extends javax.swing.JFrame {
                 UserInfo loginUser = UserBLL.loginUser(user);
                 if (loginUser != null) {
                     if (UserBLL.isUserAdmin(loginUser)) {
-                        AdminDashboard dashboard = new AdminDashboard(loginUser);
+                        Dashboard dashboard = new Dashboard(loginUser);
                         dashboard.setVisible(true);
                         this.dispose();
                     } else if (UserBLL.isUserUser(loginUser)) {
-                        AdminDashboard dashboard = new AdminDashboard(loginUser);
+                        Dashboard dashboard = new Dashboard(loginUser);
                         dashboard.setVisible(true);
                         this.dispose();
                     } else {

@@ -39,7 +39,8 @@ public class LotParams {
 
     public static class LotAssignedTableHeader {
 
-        public static final String ID = "Lot No.";
+        public static final String ID = "ID";
+        public static final String LOT_NUMBER = "Lot No.";
         public static final String DESCRIPTION = "Description";
         public static final String TYPE = "Type";
         public static final String RESERVE_PRICE = "Reserve Price";

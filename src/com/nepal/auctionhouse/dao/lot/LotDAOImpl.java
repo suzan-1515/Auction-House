@@ -5,7 +5,7 @@
  */
 package com.nepal.auctionhouse.dao.lot;
 
-import com.nepal.auctionhouse.bll.auction.AuctionMetaBLL;
+import com.nepal.auctionhouse.bll.lot.LotMetaBLL;
 import com.nepal.auctionhouse.entity.Auction;
 import com.nepal.auctionhouse.entity.Lot;
 import com.nepal.auctionhouse.entity.LotState;
@@ -98,13 +98,15 @@ public class LotDAOImpl implements LotDAO {
                 + LotParams.DESCRIPTION + "=?,"
                 + LotParams.TYPE + "=?,"
                 + LotParams.RESERVE_PRICE + "=?,"
+                + LotParams.HAMMER_PRICE + "=?,"
                 + LotParams.STATE + "=? "
                 + "WHERE " + LotParams.ID + "=?")) {
             pst.setString(1, t.getDescription());
             pst.setInt(2, t.getType().getId());
             pst.setFloat(3, t.getReservePrice());
-            pst.setInt(4, t.getState().getId());
-            pst.setInt(5, t.getId());
+            pst.setFloat(4, t.getHammerPrice());
+            pst.setInt(5, t.getState().getId());
+            pst.setInt(6, t.getId());
             id = pst.executeUpdate();
 
             Logy.d("Lot updated successfully");
@@ -249,7 +251,7 @@ public class LotDAOImpl implements LotDAO {
                 lotState.setTitle(resultSet.getString(LotStateParams.TITLE));
                 lot.setState(lotState);
                 
-                Auction auction = AuctionMetaBLL.getAuctionAssignedForLot(lot);
+                Auction auction = LotMetaBLL.getAuctionAssignedForLot(lot);
                 lot.setAuction(auction);
 
                 auctionInfoList.add(lot);

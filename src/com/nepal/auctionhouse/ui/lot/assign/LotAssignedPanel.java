@@ -6,15 +6,22 @@
 package com.nepal.auctionhouse.ui.lot.assign;
 
 import com.nepal.auctionhouse.bll.lot.LotBLL;
+import com.nepal.auctionhouse.bll.lot.LotStateBLL;
 import com.nepal.auctionhouse.entity.Lot;
+import com.nepal.auctionhouse.entity.LotMeta;
+import com.nepal.auctionhouse.entity.LotState;
+import com.nepal.auctionhouse.entity.Sale;
 import com.nepal.auctionhouse.entity.user.UserInfo;
+import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.LotParams;
+import com.nepal.auctionhouse.params.LotStateParams;
+import com.nepal.auctionhouse.ui.BaseUserPanel;
 import com.nepal.auctionhouse.util.Logy;
 import com.nepal.auctionhouse.view.LotView;
 import com.nepal.auctionhouse.widget.Alert;
 import java.sql.SQLException;
 import java.util.List;
-import javax.swing.JPanel;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.table.DefaultTableModel;
 
@@ -22,7 +29,9 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Suzn
  */
-public final class LotAssignedPanel extends JPanel implements LotView<Lot> {
+public final class LotAssignedPanel extends BaseUserPanel implements LotView<Lot> {
+
+    private final UserInfo userInfo;
 
     /**
      * Creates new form LotAssignedPanel
@@ -31,6 +40,8 @@ public final class LotAssignedPanel extends JPanel implements LotView<Lot> {
      */
     public LotAssignedPanel(UserInfo userInfo) {
         initComponents();
+        setupUserView(userInfo);
+        this.userInfo = userInfo;
         Logy.d("Admin lotAssigned panel initialized");
     }
 
@@ -52,6 +63,9 @@ public final class LotAssignedPanel extends JPanel implements LotView<Lot> {
         centerSubPanel = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
+        bottomPanel = new javax.swing.JPanel();
+        jPanel3 = new javax.swing.JPanel();
+        bidLotButton = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
 
@@ -155,18 +169,57 @@ public final class LotAssignedPanel extends JPanel implements LotView<Lot> {
 
         jPanel4.add(centerSubPanel, java.awt.BorderLayout.CENTER);
 
+        bottomPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.TRAILING));
+
+        jPanel3.setOpaque(false);
+
+        bidLotButton.setText("Bid");
+        bidLotButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED, null, null, new java.awt.Color(255, 51, 0), new java.awt.Color(255, 51, 0)));
+        bidLotButton.setPreferredSize(new java.awt.Dimension(80, 40));
+        bidLotButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bidLotButtonActionPerformed(evt);
+            }
+        });
+        jPanel3.add(bidLotButton);
+
+        bottomPanel.add(jPanel3);
+
+        jPanel4.add(bottomPanel, java.awt.BorderLayout.PAGE_END);
+
         centerPanel.add(jPanel4, "card2");
 
         add(centerPanel, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void bidLotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bidLotButtonActionPerformed
+        int row = table.getSelectedRow();
+        if (row > -1) {
+            try {
+                LotMeta u = getBeanFromRow(table.getRowSorter().convertRowIndexToModel(row));
+                if (u != null) {
+                    LotBidDialog lotBidDialog = new LotBidDialog((JFrame) SwingUtilities.getWindowAncestor(this),
+                            true, u, userInfo);
+                    lotBidDialog.setItemUpdatedListener((Sale sale) -> {
+                        updateLotAssignedData(sale);
+                        loadTableData();
+                    });
+                    lotBidDialog.setVisible(true);
+                }
+            } catch (SQLException ex) {
+                Logy.e(ex);
+                Alert.showError(this, ex.getMessage());
+            }
+        }
+    }//GEN-LAST:event_bidLotButtonActionPerformed
 
     @Override
     public final void loadTableData() {
         SwingUtilities.invokeLater(() -> {
             Logy.d("Loading lotAssigned from database");
             try {
-                List<Lot> lotAssignedList = LotBLL.getAssignedLot();
-                this.fillTableData(lotAssignedList);
+                List<Lot> lotList = LotBLL.getAssignedLot();
+                this.fillTableData(lotList);
             } catch (SQLException ex) {
                 Logy.e(ex);
                 Alert.showError(this, ex.getMessage());
@@ -189,6 +242,7 @@ public final class LotAssignedPanel extends JPanel implements LotView<Lot> {
     public void onLotRowDataAdd(Lot lotAssigned) {
         ((DefaultTableModel) table.getModel()).insertRow(0, new Object[]{
             lotAssigned.getId(),
+            lotAssigned.getId(),
             lotAssigned.getDescription(),
             lotAssigned.getType().getTitle(),
             lotAssigned.getReservePrice(),
@@ -196,17 +250,36 @@ public final class LotAssignedPanel extends JPanel implements LotView<Lot> {
         });
     }
 
+    private void updateLotAssignedData(Sale sale) {
+        try {
+            LotState lotState = LotStateBLL.getLotStateById(LotStateParams.STATE_SOLD);
+            sale.getLot().setState(lotState);
+            LotBLL.updateLot(sale.getLot());
+        } catch (RecordNotFoundException | SQLException ex) {
+            Logy.e(ex);
+            Alert.showError(this, ex.getMessage());
+        }
+    }
+
     @Override
     public void onLotDataRemove(Lot u) {
 
     }
 
+    private LotMeta getBeanFromRow(int row) throws SQLException {
+        int id = (int) table.getModel().getValueAt(row, 0);
+        return LotBLL.getLotMetaByLotId(id);
+    }
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton bidLotButton;
+    private javax.swing.JPanel bottomPanel;
     private javax.swing.JPanel centerPanel;
     private javax.swing.JPanel centerSubPanel;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel searchPanel;
@@ -229,6 +302,7 @@ public final class LotAssignedPanel extends JPanel implements LotView<Lot> {
         };
 
         tableModel.addColumn(LotParams.LotAssignedTableHeader.ID);
+        tableModel.addColumn(LotParams.LotAssignedTableHeader.LOT_NUMBER);
         tableModel.addColumn(LotParams.LotAssignedTableHeader.DESCRIPTION);
         tableModel.addColumn(LotParams.LotAssignedTableHeader.TYPE);
         tableModel.addColumn(LotParams.LotAssignedTableHeader.RESERVE_PRICE);
@@ -237,6 +311,15 @@ public final class LotAssignedPanel extends JPanel implements LotView<Lot> {
         table.setModel(tableModel);
         javax.swing.table.TableRowSorter<javax.swing.table.TableModel> rowSorter = new javax.swing.table.TableRowSorter<>(table.getModel());
         table.setRowSorter(rowSorter);
+    }
+
+    @Override
+    protected void setupAdminView() {
+        bidLotButton.setVisible(false);
+    }
+
+    @Override
+    protected void setupUserView() {
     }
 
 }
