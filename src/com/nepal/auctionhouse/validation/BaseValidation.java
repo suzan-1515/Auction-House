@@ -34,8 +34,4 @@ public abstract class BaseValidation {
         return (date == null);
     }
 
-    protected boolean isBeforeDate(Calendar expiryDate) {
-        return expiryDate.before(java.util.Calendar.getInstance());
-    }
-
 }

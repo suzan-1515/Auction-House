@@ -49,7 +49,6 @@ public class AuctionInsertDialog extends javax.swing.JDialog {
     public AuctionInsertDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        setLocationRelativeTo(parent);
         validation = new AuctionValidation(parent);
     }
 
@@ -309,6 +308,7 @@ public class AuctionInsertDialog extends javax.swing.JDialog {
     getContentPane().add(rootPanel, "card2");
 
     pack();
+    setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed

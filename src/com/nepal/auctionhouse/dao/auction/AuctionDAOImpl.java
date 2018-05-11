@@ -9,6 +9,7 @@ import com.nepal.auctionhouse.entity.Auction;
 import com.nepal.auctionhouse.params.AuctionParams;
 import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -160,6 +161,35 @@ public class AuctionDAOImpl implements AuctionDAO {
 
         try (Statement pst = connection.createStatement()) {
             ResultSet resultSet = pst.executeQuery(query);
+            while (resultSet.next()) {
+                Auction auction = new Auction();
+                auction.setId(resultSet.getInt(AuctionParams.ID));
+                auction.setDate(resultSet.getDate(AuctionParams.DATE));
+                auction.setSlot(resultSet.getString(AuctionParams.SLOT));
+                auction.setVenue(resultSet.getString(AuctionParams.VENUE));
+
+                auctionInfoList.add(auction);
+            }
+            Logy.d("Auction fetched successfully");
+        }
+
+        return auctionInfoList;
+    }
+
+    /**
+     *
+     * @param date
+     * @return
+     * @throws SQLException
+     */
+    @Override
+    public List<Auction> getUpcomingAuction(Date date) throws SQLException {
+        String query = "SELECT * FROM " + tableName + " WHERE " + AuctionParams.DATE + " > ?";
+        List<Auction> auctionInfoList = new ArrayList<>();
+
+        try (PreparedStatement pst = connection.prepareStatement(query)) {
+            pst.setDate(1, date);
+            ResultSet resultSet = pst.executeQuery();
             while (resultSet.next()) {
                 Auction auction = new Auction();
                 auction.setId(resultSet.getInt(AuctionParams.ID));

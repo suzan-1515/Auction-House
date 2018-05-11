@@ -12,6 +12,7 @@ import com.nepal.auctionhouse.entity.Lot;
 import com.nepal.auctionhouse.exception.DuplicateRecordException;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.LotParams;
+import com.nepal.auctionhouse.params.LotStateParams;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -113,6 +114,61 @@ public class LotBLL {
      */
     public static boolean isLotAvailable(Lot lot) throws SQLException {
         return getLotById(lot.getId()) != null;
+    }
+
+    /**
+     *
+     * @param u
+     * @return
+     * @throws SQLException
+     */
+    public static boolean isLotSold(Lot u) throws SQLException {
+        Lot lot = getLotById(u.getId());
+        return lot.getState().getId() == LotStateParams.STATE_SOLD;
+    }
+
+    /**
+     *
+     * @param u
+     * @return
+     * @throws SQLException
+     */
+    public static boolean isLotUnassigned(Lot u) throws SQLException {
+        Lot lot = getLotById(u.getId());
+        return lot.getState().getId() == LotStateParams.STATE_UNASSIGNED;
+    }
+
+    /**
+     *
+     * @return @throws SQLException
+     */
+    public static List<Lot> getUnassignedLot() throws SQLException {
+        Connection con = DBConnection.geConnection();
+        LotDAO lotDAO = new LotDAOImpl(con, LotParams.TABLE_NAME);
+
+        return lotDAO.getAllLotByState(LotStateParams.STATE_UNASSIGNED);
+    }
+
+    /**
+     *
+     * @return @throws SQLException
+     */
+    public static List<Lot> getAssignedLot() throws SQLException {
+        Connection con = DBConnection.geConnection();
+        LotDAO lotDAO = new LotDAOImpl(con, LotParams.TABLE_NAME);
+
+        return lotDAO.getAllLotByState(LotStateParams.STATE_ASSIGNED);
+    }
+
+    /**
+     *
+     * @return @throws SQLException
+     */
+    public static List<Lot> getSoldLot() throws SQLException {
+        Connection con = DBConnection.geConnection();
+        LotDAO lotDAO = new LotDAOImpl(con, LotParams.TABLE_NAME);
+
+        return lotDAO.getAllLotByState(LotStateParams.STATE_SOLD);
     }
 
 }

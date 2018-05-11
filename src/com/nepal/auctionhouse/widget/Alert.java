@@ -17,6 +17,10 @@ public class Alert {
     public static void showInformation(Component component, String message) {
         JOptionPane.showMessageDialog(component, message, "Information?", JOptionPane.INFORMATION_MESSAGE);
     }
+    
+    public static void showWarning(Component component, String message) {
+        JOptionPane.showMessageDialog(component, message, "Warning?", JOptionPane.WARNING_MESSAGE);
+    }
 
     public static void showError(Component component, String message) {
         JOptionPane.showMessageDialog(component, message, "Error?", JOptionPane.ERROR_MESSAGE);

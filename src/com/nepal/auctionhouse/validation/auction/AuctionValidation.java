@@ -8,6 +8,7 @@ package com.nepal.auctionhouse.validation.auction;
 import com.nepal.auctionhouse.validation.BaseValidation;
 import com.nepal.auctionhouse.widget.Alert;
 import com.nepal.auctionhouse.util.Logy;
+import com.nepal.auctionhouse.util.Utils;
 import java.awt.Component;
 import java.util.Calendar;
 
@@ -27,7 +28,7 @@ public class AuctionValidation extends BaseValidation {
             Logy.d("Auction date not valid");
             Alert.showError(component, "Auction date field cannot be empty.");
             return false;
-        } else if (isBeforeDate(auctionDate)) {
+        } else if (Utils.isBeforeCurrentDate(auctionDate)) {
             Logy.d("Auction date not valid");
             Alert.showError(component, "Auction date must be after current date.");
             return false;

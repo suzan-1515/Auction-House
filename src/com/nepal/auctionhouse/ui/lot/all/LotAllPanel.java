@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nepal.auctionhouse.ui.lot;
+package com.nepal.auctionhouse.ui.lot.all;
 
 import com.nepal.auctionhouse.bll.lot.LotBLL;
 import com.nepal.auctionhouse.entity.Lot;
@@ -15,7 +15,6 @@ import com.nepal.auctionhouse.util.Utils;
 import com.nepal.auctionhouse.view.LotView;
 import com.nepal.auctionhouse.widget.Alert;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -27,18 +26,15 @@ import javax.swing.table.DefaultTableModel;
  *
  * @author Suzn
  */
-public final class LotPanel extends JPanel implements LotView<Lot> {
-
-    private List<Lot> lotList;
+public final class LotAllPanel extends JPanel implements LotView<Lot> {
 
     /**
      * Creates new form LotPanel
      *
      * @param userInfo
      */
-    public LotPanel(UserInfo userInfo) {
+    public LotAllPanel(UserInfo userInfo) {
         initComponents();
-        lotList = new ArrayList<>();
         Logy.d("Admin lot panel initialized");
     }
 
@@ -51,9 +47,6 @@ public final class LotPanel extends JPanel implements LotView<Lot> {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        topPanel = new javax.swing.JPanel();
-        titlePanel = new javax.swing.JPanel();
-        title = new javax.swing.JLabel();
         centerPanel = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         searchPanel = new javax.swing.JPanel();
@@ -70,38 +63,6 @@ public final class LotPanel extends JPanel implements LotView<Lot> {
         deleteLotButton = new javax.swing.JButton();
 
         setLayout(new java.awt.BorderLayout());
-
-        topPanel.setBackground(new java.awt.Color(249, 249, 249));
-        topPanel.setOpaque(false);
-        topPanel.setPreferredSize(new java.awt.Dimension(367, 80));
-        topPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEADING));
-
-        titlePanel.setOpaque(false);
-        titlePanel.setPreferredSize(new java.awt.Dimension(120, 60));
-
-        title.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
-        title.setText("Lot");
-
-        javax.swing.GroupLayout titlePanelLayout = new javax.swing.GroupLayout(titlePanel);
-        titlePanel.setLayout(titlePanelLayout);
-        titlePanelLayout.setHorizontalGroup(
-            titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(titlePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(title)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        titlePanelLayout.setVerticalGroup(
-            titlePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(titlePanelLayout.createSequentialGroup()
-                .addGap(20, 20, 20)
-                .addComponent(title)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        topPanel.add(titlePanel);
-
-        add(topPanel, java.awt.BorderLayout.PAGE_START);
 
         centerPanel.setLayout(new java.awt.CardLayout());
 
@@ -254,12 +215,17 @@ public final class LotPanel extends JPanel implements LotView<Lot> {
             try {
                 Lot u = getBeanFromRow(table.getRowSorter().convertRowIndexToModel(row));
                 if (u != null) {
-                    LotUpdateDialog lotUpdateDialog = new LotUpdateDialog((JFrame) SwingUtilities.getWindowAncestor(this),
-                            true, u);
-                    lotUpdateDialog.setItemUpdatedListener((Lot lot) -> {
-                        updateLotData(lot, row);
-                    });
-                    lotUpdateDialog.setVisible(true);
+                    if (!LotBLL.isLotSold(u)) {
+                        LotUpdateDialog lotUpdateDialog = new LotUpdateDialog((JFrame) SwingUtilities.getWindowAncestor(this),
+                                true, u);
+                        lotUpdateDialog.setItemUpdatedListener((Lot lot) -> {
+                            updateLotRowData(lot, row);
+                        });
+                        lotUpdateDialog.setVisible(true);
+                    }
+                } else {
+                    Logy.d("Sold lot cannot be updated");
+                    Alert.showWarning(this, "Sold lot cannot be modified.");
                 }
             } catch (SQLException ex) {
                 Logy.e(ex);
@@ -272,7 +238,7 @@ public final class LotPanel extends JPanel implements LotView<Lot> {
         Logy.d("add lot button clicked");
         LotInsertDialog lotInsertDialog = new LotInsertDialog((JFrame) SwingUtilities.getWindowAncestor(this), true);
         lotInsertDialog.setItemAddedListener((Lot lot) -> {
-            appendLotData(lot);
+            onLotRowDataAdd(lot);
         });
 
         lotInsertDialog.setVisible(true);
@@ -301,27 +267,23 @@ public final class LotPanel extends JPanel implements LotView<Lot> {
     @Override
     public final void loadTableData() {
         SwingUtilities.invokeLater(() -> {
-            if (lotList == null || lotList.isEmpty()) {
-                Logy.d("Loading lot from database for first Time");
-                try {
-                    lotList = LotBLL.getAllLot();
-                    this.fillTableData(lotList);
+            Logy.d("Loading lot from database for first Time");
+            try {
+                List<Lot> lotList = LotBLL.getAllLot();
+                this.fillTableData(lotList);
 
-                } catch (SQLException ex) {
-                    Logy.e(ex);
-                    Alert.showError(this, ex.getMessage());
-                }
-
-            } else {
-                Logy.d("lot already loaded");
+            } catch (SQLException ex) {
+                Logy.e(ex);
+                Alert.showError(this, ex.getMessage());
             }
+
         });
     }
 
     @Override
-    public final void fillTableData(List<Lot> list
-    ) {
-        lotList.stream().forEach((lot) -> {
+    public final void fillTableData(List<Lot> list) {
+        createTableModel();
+        list.stream().forEach((lot) -> {
             onLotRowDataAdd(lot);
         });
     }
@@ -333,37 +295,15 @@ public final class LotPanel extends JPanel implements LotView<Lot> {
             lot.getDescription(),
             lot.getType().getTitle(),
             lot.getReservePrice(),
-            lot.getHammerPrice(),
             lot.getState().getTitle()
         });
-    }
-
-    private void appendLotData(Lot lot) {
-        lotList.add(lot);
-        onLotRowDataAdd(lot);
-    }
-
-    private void updateLotData(Lot s, int row) {
-        for (Lot lot : lotList) {
-            if (lot.getId() == s.getId()) {
-                lot.setDescription(s.getDescription());
-                lot.setType(s.getType());
-                lot.setReservePrice(s.getReservePrice());
-                lot.setHammerPrice(s.getHammerPrice());
-                lot.setState(s.getState());
-                break;
-            }
-        }
-
-        updateLotRowData(s, row);
     }
 
     private void updateLotRowData(Lot lot, int row) {
         ((DefaultTableModel) table.getModel()).setValueAt(lot.getDescription(), row, 1);
         ((DefaultTableModel) table.getModel()).setValueAt(lot.getType().getTitle(), row, 2);
         ((DefaultTableModel) table.getModel()).setValueAt(lot.getReservePrice(), row, 3);
-        ((DefaultTableModel) table.getModel()).setValueAt(lot.getHammerPrice(), row, 4);
-        ((DefaultTableModel) table.getModel()).setValueAt(lot.getState().getTitle(), row, 5);
+        ((DefaultTableModel) table.getModel()).setValueAt(lot.getState().getTitle(), row, 4);
     }
 
     private void removeLotData(Lot u, int row) {
@@ -373,12 +313,7 @@ public final class LotPanel extends JPanel implements LotView<Lot> {
 
     @Override
     public void onLotDataRemove(Lot u) {
-        for (Lot lot : lotList) {
-            if (lot.getId() == u.getId()) {
-                lotList.remove(lot);
-                break;
-            }
-        }
+
     }
 
     private Lot getBeanFromRow(int row) throws SQLException {
@@ -401,15 +336,32 @@ public final class LotPanel extends JPanel implements LotView<Lot> {
     private javax.swing.JPanel searchPanel;
     private javax.swing.JTextField searchTextField;
     private javax.swing.JTable table;
-    private javax.swing.JLabel title;
-    private javax.swing.JPanel titlePanel;
-    private javax.swing.JPanel topPanel;
     private javax.swing.JButton updateLotButton;
     // End of variables declaration//GEN-END:variables
 
     @Override
     public void onViewActivated() {
         this.loadTableData();
+    }
+
+    @Override
+    public void createTableModel() {
+        DefaultTableModel tableModel = new DefaultTableModel() {
+            @Override
+            public boolean isCellEditable(int i, int i1) {
+                return false;
+            }
+        };
+
+        tableModel.addColumn(LotParams.LotAllTableHeader.ID);
+        tableModel.addColumn(LotParams.LotAllTableHeader.DESCRIPTION);
+        tableModel.addColumn(LotParams.LotAllTableHeader.TYPE);
+        tableModel.addColumn(LotParams.LotAllTableHeader.RESERVE_PRICE);
+        tableModel.addColumn(LotParams.LotAllTableHeader.STATE);
+
+        table.setModel(tableModel);
+        javax.swing.table.TableRowSorter<javax.swing.table.TableModel> rowSorter = new javax.swing.table.TableRowSorter<>(table.getModel());
+        table.setRowSorter(rowSorter);
     }
 
 }

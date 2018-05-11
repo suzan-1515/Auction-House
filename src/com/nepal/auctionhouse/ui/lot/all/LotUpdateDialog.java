@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nepal.auctionhouse.ui.lot;
+package com.nepal.auctionhouse.ui.lot.all;
 
 import com.nepal.auctionhouse.bll.lot.LotBLL;
 import com.nepal.auctionhouse.bll.lot.LotTypeBLL;

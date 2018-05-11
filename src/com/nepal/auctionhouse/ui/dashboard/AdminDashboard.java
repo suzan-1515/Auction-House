@@ -9,7 +9,7 @@ import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.ui.auction.AuctionPanel;
 import com.nepal.auctionhouse.ui.home.HomePanel;
 import com.nepal.auctionhouse.ui.login.Login;
-import com.nepal.auctionhouse.ui.lot.LotPanel;
+import com.nepal.auctionhouse.ui.lot.LotInfoPanel;
 import com.nepal.auctionhouse.ui.user.UserPanel;
 import com.nepal.auctionhouse.util.ComponentUtils;
 import com.nepal.auctionhouse.util.Logy;
@@ -24,7 +24,7 @@ public final class AdminDashboard extends BaseDashboard {
 
     private HomePanel homePanel;
     private AuctionPanel auctionPanel;
-    private LotPanel lotPanel;
+    private LotInfoPanel lotPanel;
     private UserPanel userPanel;
     private final UserInfo userInfo;
 
@@ -72,10 +72,6 @@ public final class AdminDashboard extends BaseDashboard {
         lotMenuButton = new javax.swing.JButton();
         jPanel9 = new javax.swing.JPanel();
         userMenuButton = new javax.swing.JButton();
-        jPanel10 = new javax.swing.JPanel();
-        saleMenuButton = new javax.swing.JButton();
-        jPanel11 = new javax.swing.JPanel();
-        profileMenuButton = new javax.swing.JButton();
         logoutButtonPanel = new javax.swing.JPanel();
         logoutButton = new javax.swing.JButton();
 
@@ -197,8 +193,7 @@ public final class AdminDashboard extends BaseDashboard {
                 auctionMenuButton.setBorder(defaultDashboardMenuBorder);
                 lotMenuButton.setBorder(defaultDashboardMenuBorder);
                 userMenuButton.setBorder(defaultDashboardMenuBorder);
-                saleMenuButton.setBorder(defaultDashboardMenuBorder);
-                profileMenuButton.setBorder(defaultDashboardMenuBorder);
+
                 homeMenuButtonActionPerformed(evt);
             }
         });
@@ -242,8 +237,7 @@ public final class AdminDashboard extends BaseDashboard {
                 homeMenuButton.setBorder(defaultDashboardMenuBorder);
                 lotMenuButton.setBorder(defaultDashboardMenuBorder);
                 userMenuButton.setBorder(defaultDashboardMenuBorder);
-                saleMenuButton.setBorder(defaultDashboardMenuBorder);
-                profileMenuButton.setBorder(defaultDashboardMenuBorder);
+
                 auctionMenuButtonActionPerformed(evt);
             }
         });
@@ -287,8 +281,7 @@ public final class AdminDashboard extends BaseDashboard {
                 auctionMenuButton.setBorder(defaultDashboardMenuBorder);
                 homeMenuButton.setBorder(defaultDashboardMenuBorder);
                 userMenuButton.setBorder(defaultDashboardMenuBorder);
-                saleMenuButton.setBorder(defaultDashboardMenuBorder);
-                profileMenuButton.setBorder(defaultDashboardMenuBorder);
+
                 lotMenuButtonActionPerformed(evt);
             }
         });
@@ -332,8 +325,7 @@ public final class AdminDashboard extends BaseDashboard {
                 auctionMenuButton.setBorder(defaultDashboardMenuBorder);
                 homeMenuButton.setBorder(defaultDashboardMenuBorder);
                 lotMenuButton.setBorder(defaultDashboardMenuBorder);
-                saleMenuButton.setBorder(defaultDashboardMenuBorder);
-                profileMenuButton.setBorder(defaultDashboardMenuBorder);
+
                 userMenuButtonActionPerformed(evt);
             }
         });
@@ -353,97 +345,6 @@ public final class AdminDashboard extends BaseDashboard {
         );
 
         jPanel7.add(jPanel9);
-
-        jPanel10.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel10.setOpaque(false);
-        jPanel10.setPreferredSize(new java.awt.Dimension(136, 70));
-
-        saleMenuButton.setBackground(new java.awt.Color(67, 160, 71));
-        saleMenuButton.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        saleMenuButton.setForeground(new java.awt.Color(255, 255, 255));
-        saleMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/sale.png"))); // NOI18N
-        saleMenuButton.setText("Sale");
-        saleMenuButton.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 1));
-        buttonGroup1.add(saleMenuButton);
-        saleMenuButton.setContentAreaFilled(false);
-        saleMenuButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        saleMenuButton.setIconTextGap(10);
-        saleMenuButton.setOpaque(true);
-        saleMenuButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/sale.png"))); // NOI18N
-        saleMenuButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/sale1x.png"))); // NOI18N
-        saleMenuButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saleMenuButton.setBorder(selectedDashboardMenuBorder);
-                homeMenuButton.setBorder(defaultDashboardMenuBorder);
-                auctionMenuButton.setBorder(defaultDashboardMenuBorder);
-                lotMenuButton.setBorder(defaultDashboardMenuBorder);
-                userMenuButton.setBorder(defaultDashboardMenuBorder);
-                profileMenuButton.setBorder(defaultDashboardMenuBorder);
-                saleMenuButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel10Layout = new javax.swing.GroupLayout(jPanel10);
-        jPanel10.setLayout(jPanel10Layout);
-        jPanel10Layout.setHorizontalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(saleMenuButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
-        );
-        jPanel10Layout.setVerticalGroup(
-            jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel10Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(saleMenuButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        jPanel7.add(jPanel10);
-
-        jPanel11.setBackground(new java.awt.Color(255, 255, 255));
-        jPanel11.setOpaque(false);
-        jPanel11.setPreferredSize(new java.awt.Dimension(136, 70));
-
-        profileMenuButton.setBackground(new java.awt.Color(67, 160, 71));
-        profileMenuButton.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        profileMenuButton.setForeground(new java.awt.Color(255, 255, 255));
-        profileMenuButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/member.png"))); // NOI18N
-        profileMenuButton.setText("Profile");
-        profileMenuButton.setToolTipText("");
-        profileMenuButton.setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 5, 1, 1));
-        buttonGroup1.add(profileMenuButton);
-        profileMenuButton.setContentAreaFilled(false);
-        profileMenuButton.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        profileMenuButton.setIconTextGap(10);
-        profileMenuButton.setOpaque(true);
-        profileMenuButton.setPressedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/member.png"))); // NOI18N
-        profileMenuButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/images/member1x.png"))); // NOI18N
-        profileMenuButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                profileMenuButton.setBorder(selectedDashboardMenuBorder);
-                homeMenuButton.setBorder(defaultDashboardMenuBorder);
-                auctionMenuButton.setBorder(defaultDashboardMenuBorder);
-                lotMenuButton.setBorder(defaultDashboardMenuBorder);
-                userMenuButton.setBorder(defaultDashboardMenuBorder);
-                saleMenuButton.setBorder(defaultDashboardMenuBorder);
-                profileMenuButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout jPanel11Layout = new javax.swing.GroupLayout(jPanel11);
-        jPanel11.setLayout(jPanel11Layout);
-        jPanel11Layout.setHorizontalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(profileMenuButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
-        );
-        jPanel11Layout.setVerticalGroup(
-            jPanel11Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel11Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(profileMenuButton, javax.swing.GroupLayout.PREFERRED_SIZE, 48, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        jPanel7.add(jPanel11);
 
         logoutButtonPanel.setBackground(new java.awt.Color(255, 255, 255));
         logoutButtonPanel.setOpaque(false);
@@ -575,10 +476,10 @@ public final class AdminDashboard extends BaseDashboard {
         return auctionPanel;
     }
 
-    private LotPanel getLotPanel() {
+    private LotInfoPanel getLotPanel() {
         if (lotPanel == null) {
             Logy.d("Creating lot panel instance");
-            lotPanel = new LotPanel(userInfo);
+            lotPanel = new LotInfoPanel(userInfo);
         }
         lotPanel.onViewActivated();
 
@@ -646,8 +547,6 @@ public final class AdminDashboard extends BaseDashboard {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -661,9 +560,7 @@ public final class AdminDashboard extends BaseDashboard {
     private javax.swing.JButton logoutButton;
     private javax.swing.JPanel logoutButtonPanel;
     private javax.swing.JButton lotMenuButton;
-    private javax.swing.JButton profileMenuButton;
     private javax.swing.JPanel rootPanel;
-    private javax.swing.JButton saleMenuButton;
     private javax.swing.JPanel titlePanel;
     private javax.swing.JPanel topPanel;
     private javax.swing.JButton userMenuButton;

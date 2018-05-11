@@ -6,7 +6,9 @@
 package com.nepal.auctionhouse.dao.auction;
 
 import com.nepal.auctionhouse.dao.DAO;
+import com.nepal.auctionhouse.entity.Auction;
 import com.nepal.auctionhouse.entity.AuctionMeta;
+import com.nepal.auctionhouse.entity.Lot;
 import java.sql.SQLException;
 
 /**
@@ -16,5 +18,7 @@ import java.sql.SQLException;
 public interface AuctionMetaDAO extends DAO<AuctionMeta> {
 
     boolean isAuctionMetaAvailable(AuctionMeta auction) throws SQLException;
+
+    Auction getAuctionAssignedForLot(Lot lot) throws SQLException;
 
 }

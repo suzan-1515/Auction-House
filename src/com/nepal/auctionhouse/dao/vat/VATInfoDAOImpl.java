@@ -58,14 +58,14 @@ public class VATInfoDAOImpl implements VATInfoDAO {
     public int save(VATInfo t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?)",Statement.RETURN_GENERATED_KEYS)) {
+                + " values(null,?,?)",Statement.RETURN_GENERATED_KEYS)) {
             pst.setFloat(1, t.getPercentage());
             pst.setInt(2, t.getLotType().getId());
             pst.executeUpdate();
             
             ResultSet rs = pst.getGeneratedKeys();
             rs.next();
-            id = pst.getGeneratedKeys().getInt(1);
+            id = rs.getInt(1);
 
             Logy.d("VATInfo inserted successfully");
         }

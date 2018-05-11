@@ -122,7 +122,7 @@ public final class UserPanel extends JPanel implements UserView<UserInfo> {
 
         searchTextField.setBackground(new java.awt.Color(249, 249, 249));
         searchTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        searchTextField.setToolTipText("Search for title, publisher, author..");
+        searchTextField.setToolTipText("Search for name,username,role..");
         searchTextField.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(39, 26, 252)));
         searchTextField.setMinimumSize(new java.awt.Dimension(200, 15));
         searchTextField.setOpaque(false);

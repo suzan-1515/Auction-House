@@ -51,7 +51,14 @@ public class AuctionMetaDAOImpl implements AuctionMetaDAO {
      */
     @Override
     public boolean isAuctionMetaAvailable(AuctionMeta auctionMeta) throws SQLException {
-        return findById(auctionMeta.getId()) != null;
+        String query = "SELECT * FROM " + tableName + " WHERE "
+                + AuctionMetaParams.LOT + "=? ";
+        try (PreparedStatement pst = connection.prepareStatement(query)) {
+            pst.setInt(1, auctionMeta.getLot().getId());
+            ResultSet resultSet = pst.executeQuery();
+
+            return resultSet.next();
+        }
     }
 
     /**
@@ -64,14 +71,15 @@ public class AuctionMetaDAOImpl implements AuctionMetaDAO {
     public int save(AuctionMeta t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?)",Statement.RETURN_GENERATED_KEYS)) {
-            pst.setInt(1, t.getAuction().getId());
-            pst.setInt(2, t.getLot().getId());
+                + " values(?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
+            pst.setInt(1, t.getId());
+            pst.setInt(2, t.getAuction().getId());
+            pst.setInt(3, t.getLot().getId());
             pst.executeUpdate();
-            
+
             ResultSet rs = pst.getGeneratedKeys();
             rs.next();
-            id = pst.getGeneratedKeys().getInt(1);
+            id = rs.getInt(1);
 
             Logy.d("AuctionMeta inserted successfully");
         }
@@ -233,6 +241,32 @@ public class AuctionMetaDAOImpl implements AuctionMetaDAO {
         }
 
         return auctionInfoList;
+    }
+
+    @Override
+    public Auction getAuctionAssignedForLot(Lot lot) throws SQLException {
+        String query = "SELECT auc.a_id,auc.a_date,auc.a_slot,auc.a_venue "
+                + "FROM `" + tableName + "` am "
+                + "INNER JOIN ah_auction auc on am.m_auction = auc.a_id "
+                + "WHERE am.m_lot =? LIMIT 1";
+        try (PreparedStatement pst = connection.prepareStatement(query)) {
+            pst.setInt(1, lot.getId());
+            ResultSet resultSet = pst.executeQuery();
+            while (resultSet.next()) {
+
+                Auction auction = new Auction();
+                auction.setId(resultSet.getInt(AuctionParams.ID));
+                auction.setDate(resultSet.getDate(AuctionParams.DATE));
+                auction.setSlot(resultSet.getString(AuctionParams.SLOT));
+                auction.setVenue(resultSet.getString(AuctionParams.VENUE));
+
+                Logy.d("Auction fetched successfully");
+
+                return auction;
+            }
+        }
+
+        return null;
     }
 
 }

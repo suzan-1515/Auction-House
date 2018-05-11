@@ -7,7 +7,9 @@ package com.nepal.auctionhouse.dao.auction;
 
 import com.nepal.auctionhouse.dao.DAO;
 import com.nepal.auctionhouse.entity.Auction;
+import java.sql.Date;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  *
@@ -16,5 +18,7 @@ import java.sql.SQLException;
 public interface AuctionDAO extends DAO<Auction> {
 
     boolean isAuctionAvailable(Auction auction) throws SQLException;
+    
+    List<Auction> getUpcomingAuction(Date date) throws SQLException;
 
 }

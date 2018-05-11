@@ -46,6 +46,21 @@ public class Utils {
     public static int getIdFromTable(JTable table, int row) {
         return (int) table.getModel().getValueAt(row, 0);
     }
-   
+
+    public static boolean isAfterCurrentDate(Date date) {
+        return date.after(new Date(new java.util.Date().getTime()));
+    }
+
+    public static boolean isBeforeCurrentDate(Date date) {
+        return date.before(new Date(new java.util.Date().getTime()));
+    }
+
+    public static boolean isBeforeCurrentDate(Calendar date) {
+        return date.before(Calendar.getInstance());
+    }
+
+    public static boolean isBeforeAndEqualCurrentDate(Date date) {
+        return isBeforeCurrentDate(date) || ((new java.util.Date(date.getTime()).compareTo(new java.util.Date())) == 0);
+    }
 
 }

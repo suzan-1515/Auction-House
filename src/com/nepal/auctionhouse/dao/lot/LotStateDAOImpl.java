@@ -56,13 +56,13 @@ public class LotStateDAOImpl implements LotStateDAO {
     public int save(LotState t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?)",Statement.RETURN_GENERATED_KEYS)) {
+                + " values(null,?)",Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, t.getTitle());
             pst.executeUpdate();
             
             ResultSet rs = pst.getGeneratedKeys();
             rs.next();
-            id = pst.getGeneratedKeys().getInt(1);
+            id = rs.getInt(1);
 
             Logy.d("LotState inserted successfully");
         }

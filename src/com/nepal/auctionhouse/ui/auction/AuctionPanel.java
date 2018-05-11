@@ -91,7 +91,7 @@ public final class AuctionPanel extends JPanel
 
         searchTextField.setBackground(new java.awt.Color(249, 249, 249));
         searchTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        searchTextField.setToolTipText("Search for title, publisher, author..");
+        searchTextField.setToolTipText("Search for auction no,date,slot,state..");
         searchTextField.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 0, 2, 0, new java.awt.Color(39, 26, 252)));
         searchTextField.setMinimumSize(new java.awt.Dimension(200, 15));
         searchTextField.setOpaque(false);
@@ -261,12 +261,22 @@ public final class AuctionPanel extends JPanel
         if (row > -1) {
             Auction s = getBeanFromRow(table.getRowSorter().convertRowIndexToModel(row));
             if (s != null) {
-                AuctionUpdateDialog auctionUpdateDialog = new AuctionUpdateDialog((JFrame) SwingUtilities.getWindowAncestor(this),
-                        true, s);
-                auctionUpdateDialog.setItemUpdatedListener((Auction auction) -> {
-                    updateAuctionData(auction, row);
-                });
-                auctionUpdateDialog.setVisible(true);
+                try {
+                    if (AuctionBLL.isUpcomingAuction(s)) {
+                        AuctionUpdateDialog auctionUpdateDialog = new AuctionUpdateDialog((JFrame) SwingUtilities.getWindowAncestor(this),
+                                true, s);
+                        auctionUpdateDialog.setItemUpdatedListener((Auction auction) -> {
+                            updateAuctionData(auction, row);
+                        });
+                        auctionUpdateDialog.setVisible(true);
+                    } else {
+                        Logy.d("Past auction cannot be modified.");
+                        Alert.showInformation(this, "Past auction cannot be modified.");
+                    }
+                } catch (SQLException ex) {
+                    Logy.e(ex);
+                    Alert.showError(this, ex.getMessage());
+                }
             }
         }
     }//GEN-LAST:event_updateAuctionButtonActionPerformed

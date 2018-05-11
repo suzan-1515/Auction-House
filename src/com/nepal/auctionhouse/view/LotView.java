@@ -15,5 +15,7 @@ public interface LotView<T> extends View<T> {
     void onLotRowDataAdd(T u);
 
     void onLotDataRemove(T u);
+    
+    void createTableModel();
 
 }

@@ -17,14 +17,17 @@ public final class Lot {
     private float reservePrice;
     private float hammerPrice;
     private LotState state;
+    private Auction auction;
 
     public Lot() {
         type = new LotType();
         state = new LotState();
+        auction = new Auction();
     }
 
     public Lot(int id, String description, LotType type, float reservePrice,
             LotState state) {
+        this();
         this.id = id;
         this.description = description;
         this.type = type;
@@ -33,6 +36,7 @@ public final class Lot {
     }
 
     public Lot(int id) {
+        this();
         this.id = id;
     }
 
@@ -118,6 +122,20 @@ public final class Lot {
      */
     public void setState(LotState state) {
         this.state = state;
+    }
+
+    /**
+     * @return the auction
+     */
+    public Auction getAuction() {
+        return auction;
+    }
+
+    /**
+     * @param auction the auction to set
+     */
+    public void setAuction(Auction auction) {
+        this.auction = auction;
     }
 
 }

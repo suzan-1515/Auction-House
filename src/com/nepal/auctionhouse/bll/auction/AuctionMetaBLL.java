@@ -8,7 +8,9 @@ package com.nepal.auctionhouse.bll.auction;
 import com.nepal.auctionhouse.dao.auction.AuctionMetaDAO;
 import com.nepal.auctionhouse.dao.auction.AuctionMetaDAOImpl;
 import com.nepal.auctionhouse.database.DBConnection;
+import com.nepal.auctionhouse.entity.Auction;
 import com.nepal.auctionhouse.entity.AuctionMeta;
+import com.nepal.auctionhouse.entity.Lot;
 import com.nepal.auctionhouse.exception.DuplicateRecordException;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.AuctionMetaParams;
@@ -113,6 +115,13 @@ public class AuctionMetaBLL {
      */
     public static boolean isAuctionMetaAvailable(AuctionMeta auctionMeta) throws SQLException {
         return getAuctionMetaById(auctionMeta.getId()) != null;
+    }
+
+    public static Auction getAuctionAssignedForLot(Lot lot) throws SQLException {
+        Connection con = DBConnection.geConnection();
+        AuctionMetaDAO auctionMetaDAO = new AuctionMetaDAOImpl(con, AuctionMetaParams.TABLE_NAME);
+
+        return auctionMetaDAO.getAuctionAssignedForLot(lot);
     }
 
 }

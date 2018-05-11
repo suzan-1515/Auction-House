@@ -12,6 +12,7 @@ import com.nepal.auctionhouse.entity.Auction;
 import com.nepal.auctionhouse.exception.DuplicateRecordException;
 import com.nepal.auctionhouse.exception.RecordNotFoundException;
 import com.nepal.auctionhouse.params.AuctionParams;
+import com.nepal.auctionhouse.util.Utils;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.SQLException;
@@ -107,6 +108,19 @@ public class AuctionBLL {
 
     /**
      *
+     * @param date
+     * @return
+     * @throws SQLException
+     */
+    public static List<Auction> getUpcomingAuction(Date date) throws SQLException {
+        Connection con = DBConnection.geConnection();
+        AuctionDAO auctionDAO = new AuctionDAOImpl(con, AuctionParams.TABLE_NAME);
+
+        return auctionDAO.getUpcomingAuction(date);
+    }
+
+    /**
+     *
      * @param auction
      * @return
      * @throws java.sql.SQLException
@@ -116,9 +130,25 @@ public class AuctionBLL {
         return getAuctionById(auction.getId()) != null;
     }
 
+    /**
+     *
+     * @param date
+     * @return
+     */
     public static String getAuctionState(Date date) {
-        return date.before(new Date(new java.util.Date().getTime())) ? AuctionParams.STATE_PAST
+        return Utils.isBeforeCurrentDate(date) ? AuctionParams.STATE_PAST
                 : AuctionParams.STATE_UPCOMING;
+    }
+
+    /**
+     *
+     * @param s
+     * @return
+     * @throws java.sql.SQLException
+     */
+    public static boolean isUpcomingAuction(Auction s) throws SQLException {
+        Auction auction = getAuctionById(s.getId());
+        return Utils.isAfterCurrentDate(auction.getDate());
     }
 
 }

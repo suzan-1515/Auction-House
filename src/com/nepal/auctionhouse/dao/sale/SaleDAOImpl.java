@@ -66,17 +66,17 @@ public class SaleDAOImpl implements SaleDAO {
     public int save(Sale t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?,?,?,?)",Statement.RETURN_GENERATED_KEYS)) {
+                + " values(null,?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
             pst.setInt(1, t.getLot().getId());
             pst.setFloat(2, t.getCommision());
             pst.setFloat(3, t.getVatAmount());
             pst.setInt(4, t.getUser().getId());
             pst.setDate(5, t.getDate());
             pst.executeUpdate();
-            
+
             ResultSet rs = pst.getGeneratedKeys();
             rs.next();
-            id = pst.getGeneratedKeys().getInt(1);
+            id = rs.getInt(1);
 
             Logy.d("Sale inserted successfully");
         }
@@ -214,8 +214,7 @@ public class SaleDAOImpl implements SaleDAO {
                 + "INNER JOIN ah_lot_type ON ah_lot_type.t_id = ah_lot.l_type\n"
                 + "INNER JOIN ah_lot_state ON ah_lot_state.s_id = ah_lot.l_state\n"
                 + "INNER JOIN ah_user ON ah_user.u_id = ah_sales.s_user\n"
-                + "INNER JOIN ah_role On ah_role.r_id = ah_user.u_role\n"
-                + "ORDER BY ah_sale.l_id DESC";
+                + "INNER JOIN ah_role On ah_role.r_id = ah_user.u_role";
         List<Sale> auctionInfoList = new ArrayList<>();
 
         try (Statement pst = connection.createStatement()) {
@@ -258,10 +257,9 @@ public class SaleDAOImpl implements SaleDAO {
                 user.setRole(role);
                 sale.setUser(user);
 
-                Logy.d("Sale fetched successfully");
-
                 auctionInfoList.add(sale);
             }
+            Logy.d("Sale fetched ssuccessfully");
         }
 
         return auctionInfoList;

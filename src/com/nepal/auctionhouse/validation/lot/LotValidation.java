@@ -9,7 +9,6 @@ import com.nepal.auctionhouse.util.Logy;
 import com.nepal.auctionhouse.validation.BaseValidation;
 import com.nepal.auctionhouse.widget.Alert;
 import java.awt.Component;
-import java.util.Calendar;
 
 /**
  *
@@ -45,6 +44,26 @@ public class LotValidation extends BaseValidation {
         }
 
         Logy.d("Lot insert form is validated");
+
+        return true;
+    }
+
+    public boolean isAssignLotFormValid(Object selectedItem, String lotNumber) {
+        Logy.d("Validating lot assign form");
+
+        if (isStringEmptyOrNull(lotNumber)) {
+            Logy.d("Lot number not valid");
+            Alert.showError(component, "Lot number field cannot be empty.");
+            return false;
+        }
+
+        if (selectedItem == null) {
+            Logy.d("Auction not valid");
+            Alert.showError(component, "Upcoming auction field cannot be empty.");
+            return false;
+        }
+
+        Logy.d("Lot assign form is validated");
 
         return true;
     }

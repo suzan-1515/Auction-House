@@ -69,7 +69,7 @@ public class UserDAOImpl implements UserDAO {
             
             ResultSet rs = pst.getGeneratedKeys();
             rs.next();
-            id = pst.getGeneratedKeys().getInt(1);
+            id = rs.getInt(1);
             
             Logy.d("User inserted successfully");
         }
