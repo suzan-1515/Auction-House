@@ -59,12 +59,11 @@ public class UserDAOImpl implements UserDAO {
     public int save(UserInfo t) throws SQLException {
         int id;
         try (PreparedStatement pst = connection.prepareStatement("INSERT INTO " + tableName + ""
-                + " values(?,?,?,?)",Statement.RETURN_GENERATED_KEYS)) {
-            pst.setInt(1, t.getId());
-            pst.setString(2, t.getName());
-            pst.setString(3, t.getUsername());
-            pst.setString(4, t.getPassword());
-            pst.setInt(5, t.getRole().getId());
+                + " values(null,?,?,?,?)",Statement.RETURN_GENERATED_KEYS)) {
+            pst.setString(1, t.getName());
+            pst.setString(2, t.getUsername());
+            pst.setString(3, t.getPassword());
+            pst.setInt(4, t.getRole().getId());
             pst.executeUpdate();
             
             ResultSet rs = pst.getGeneratedKeys();
@@ -237,7 +236,7 @@ public class UserDAOImpl implements UserDAO {
     @Override
     public boolean isUsernameAlreadyUsed(String username) throws SQLException {
 
-        String query = "SELECT u_username from " + UserParams.TABLE_NAME + " LIMIT 1";
+        String query = "SELECT * from " + UserParams.TABLE_NAME + " WHERE u_username=?  LIMIT 1";
         try (PreparedStatement pst = connection.prepareStatement(query)) {
             pst.setString(1, username);
             ResultSet resultSet = pst.executeQuery();

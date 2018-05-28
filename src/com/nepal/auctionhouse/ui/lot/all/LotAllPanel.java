@@ -28,6 +28,8 @@ import javax.swing.table.DefaultTableModel;
  */
 public final class LotAllPanel extends BaseUserPanel implements LotView<Lot> {
 
+    private final UserInfo userInfo;
+
     /**
      * Creates new form LotPanel
      *
@@ -35,6 +37,7 @@ public final class LotAllPanel extends BaseUserPanel implements LotView<Lot> {
      */
     public LotAllPanel(UserInfo userInfo) {
         initComponents();
+        this.userInfo = userInfo;
         setupUserView(userInfo);
         Logy.d("lot all panel initialized");
     }
@@ -216,17 +219,24 @@ public final class LotAllPanel extends BaseUserPanel implements LotView<Lot> {
             try {
                 Lot u = getBeanFromRow(table.getRowSorter().convertRowIndexToModel(row));
                 if (u != null) {
-                    if (!LotBLL.isLotSold(u)) {
-                        LotUpdateDialog lotUpdateDialog = new LotUpdateDialog((JFrame) SwingUtilities.getWindowAncestor(this),
-                                true, u);
-                        lotUpdateDialog.setItemUpdatedListener((Lot lot) -> {
-                            updateLotRowData(lot, row);
-                        });
-                        lotUpdateDialog.setVisible(true);
+                    u.setUser(userInfo);
+                    if (LotBLL.isLotAddedByUser(u)) {
+                        if (!LotBLL.isLotSold(u)) {
+                            LotUpdateDialog lotUpdateDialog = new LotUpdateDialog((JFrame) SwingUtilities.getWindowAncestor(this),
+                                    true, u);
+                            lotUpdateDialog.setItemUpdatedListener((Lot lot) -> {
+                                updateLotRowData(lot, row);
+                            });
+                            lotUpdateDialog.setVisible(true);
+
+                        } else {
+                            Logy.d("Sold lot cannot be updated");
+                            Alert.showWarning(this, "Sold lot cannot be modified.");
+                        }
+                    } else {
+                        Logy.d("Cannot update this lot.");
+                        Alert.showWarning(this, "You does not have permission to update this lot.");
                     }
-                } else {
-                    Logy.d("Sold lot cannot be updated");
-                    Alert.showWarning(this, "Sold lot cannot be modified.");
                 }
             } catch (SQLException ex) {
                 Logy.e(ex);
@@ -237,7 +247,7 @@ public final class LotAllPanel extends BaseUserPanel implements LotView<Lot> {
 
     private void addLotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addLotButtonActionPerformed
         Logy.d("add lot button clicked");
-        LotInsertDialog lotInsertDialog = new LotInsertDialog((JFrame) SwingUtilities.getWindowAncestor(this), true);
+        LotInsertDialog lotInsertDialog = new LotInsertDialog((JFrame) SwingUtilities.getWindowAncestor(this), true, userInfo);
         lotInsertDialog.setItemAddedListener((Lot lot) -> {
             onLotRowDataAdd(lot);
         });
@@ -253,10 +263,21 @@ public final class LotAllPanel extends BaseUserPanel implements LotView<Lot> {
                 int id = Utils.getIdFromTable(table, table.getRowSorter().convertRowIndexToModel(row));
                 try {
                     Lot lot = new Lot(id);
-                    LotBLL.deleteLot(lot);
-                    removeLotData(lot, row);
+                    lot.setUser(userInfo);
+                    if (LotBLL.isLotAddedByUser(lot)) {
+                        try {
+                            LotBLL.deleteLot(lot);
+                            removeLotData(lot, row);
 
-                } catch (RecordNotFoundException | SQLException ex) {
+                        } catch (RecordNotFoundException | SQLException ex) {
+                            Logy.e(ex);
+                            Alert.showError(this, ex.getMessage());
+                        }
+                    } else {
+                        Logy.d("Cannot update this lot.");
+                        Alert.showWarning(this, "You does not have permission to update this lot.");
+                    }
+                } catch (SQLException ex) {
                     Logy.e(ex);
                     Alert.showError(this, ex.getMessage());
                 }
@@ -282,7 +303,8 @@ public final class LotAllPanel extends BaseUserPanel implements LotView<Lot> {
     }
 
     @Override
-    public final void fillTableData(List<Lot> list) {
+    public final void fillTableData(List<Lot> list
+    ) {
         createTableModel();
         list.stream().forEach((lot) -> {
             onLotRowDataAdd(lot);
@@ -290,7 +312,8 @@ public final class LotAllPanel extends BaseUserPanel implements LotView<Lot> {
     }
 
     @Override
-    public void onLotRowDataAdd(Lot lot) {
+    public void onLotRowDataAdd(Lot lot
+    ) {
         ((DefaultTableModel) table.getModel()).insertRow(0, new Object[]{
             lot.getId(),
             lot.getDescription(),

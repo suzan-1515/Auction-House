@@ -7,7 +7,6 @@ package com.nepal.auctionhouse.dao.lot;
 
 import com.nepal.auctionhouse.dao.DAO;
 import com.nepal.auctionhouse.entity.Lot;
-import com.nepal.auctionhouse.entity.LotMeta;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -20,5 +19,7 @@ public interface LotDAO extends DAO<Lot> {
     boolean isLotAvailable(Lot lot) throws SQLException;
 
     List<Lot> getAllLotByState(int state) throws SQLException;
+    
+    boolean isLotAddedByUser(Lot lot) throws SQLException;
 
 }

@@ -10,9 +10,13 @@ import com.nepal.auctionhouse.entity.Auction;
 import com.nepal.auctionhouse.entity.Lot;
 import com.nepal.auctionhouse.entity.LotState;
 import com.nepal.auctionhouse.entity.LotType;
+import com.nepal.auctionhouse.entity.Role;
+import com.nepal.auctionhouse.entity.user.UserInfo;
 import com.nepal.auctionhouse.params.LotParams;
 import com.nepal.auctionhouse.params.LotStateParams;
 import com.nepal.auctionhouse.params.LotTypeParams;
+import com.nepal.auctionhouse.params.RoleParams;
+import com.nepal.auctionhouse.params.UserParams;
 import com.nepal.auctionhouse.util.Logy;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -65,12 +69,14 @@ public class LotDAOImpl implements LotDAO {
                 + "(" + LotParams.DESCRIPTION + ","
                 + LotParams.TYPE + ","
                 + LotParams.RESERVE_PRICE + ","
-                + LotParams.STATE + ") "
-                + "values(?,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
+                + LotParams.STATE + ","
+                + LotParams.USER + ") "
+                + "values(?,?,?,?,?)", Statement.RETURN_GENERATED_KEYS)) {
             pst.setString(1, t.getDescription());
             pst.setInt(2, t.getType().getId());
             pst.setFloat(3, t.getReservePrice());
             pst.setInt(4, t.getState().getId());
+            pst.setInt(5, t.getUser().getId());
             pst.executeUpdate();
 
             ResultSet rs = pst.getGeneratedKeys();
@@ -145,9 +151,12 @@ public class LotDAOImpl implements LotDAO {
     public Lot findById(int id) throws SQLException {
         String query = "SELECT ah_lot.l_id,ah_lot.l_description,ah_lot_type.t_id,"
                 + "ah_lot_type.t_title,ah_lot.l_reserve_price,ah_lot.l_hammer_price,"
-                + "ah_lot_state.s_id,ah_lot_state.s_title FROM `" + tableName + "` "
+                + "ah_lot_state.s_id,ah_lot_state.s_title,ah_user.u_id,ah_user.u_name,"
+                + "ah_user.u_username,ah_user.u_password,ah_role.r_id,ah_role.r_title FROM `" + tableName + "` "
                 + "INNER JOIN ah_lot_type on ah_lot_type.t_id = ah_lot.l_type "
                 + "INNER JOIN ah_lot_state on ah_lot_state.s_id = ah_lot.l_state "
+                + "INNER JOIN ah_user on ah_user.u_id = ah_lot.l_user "
+                + "INNER JOIN ah_role on ah_role.r_id = ah_user.u_role "
                 + "WHERE ah_lot.l_id =? LIMIT 1";
         try (PreparedStatement pst = connection.prepareStatement(query)) {
             pst.setInt(1, id);
@@ -170,6 +179,19 @@ public class LotDAOImpl implements LotDAO {
                 lotState.setTitle(resultSet.getString(LotStateParams.TITLE));
                 lot.setState(lotState);
 
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(resultSet.getInt(UserParams.ID));
+                userInfo.setName(resultSet.getString(UserParams.NAME));
+                userInfo.setUsername(resultSet.getString(UserParams.USERNAME));
+                userInfo.setPassword(resultSet.getString(UserParams.PASSWORD));
+
+                Role role = new Role();
+                role.setId(resultSet.getInt(RoleParams.ID));
+                role.setTitle(resultSet.getString(RoleParams.TITLE));
+                userInfo.setRole(role);
+
+                lot.setUser(userInfo);
+
                 return lot;
             }
             Logy.d("Lot fetched successfully");
@@ -186,9 +208,12 @@ public class LotDAOImpl implements LotDAO {
     public List<Lot> findAll() throws SQLException {
         String query = "SELECT ah_lot.l_id,ah_lot.l_description,ah_lot_type.t_id,"
                 + "ah_lot_type.t_title,ah_lot.l_reserve_price,ah_lot.l_hammer_price,"
-                + "ah_lot_state.s_id,ah_lot_state.s_title FROM `" + tableName + "` "
+                + "ah_lot_state.s_id,ah_lot_state.s_title,ah_user.u_id,ah_user.u_name,"
+                + "ah_user.u_username,ah_user.u_password,ah_role.r_id,ah_role.r_title FROM `" + tableName + "` "
                 + "INNER JOIN ah_lot_type on ah_lot_type.t_id = ah_lot.l_type "
-                + "INNER JOIN ah_lot_state on ah_lot_state.s_id = ah_lot.l_state ";
+                + "INNER JOIN ah_lot_state on ah_lot_state.s_id = ah_lot.l_state "
+                + "INNER JOIN ah_user on ah_user.u_id = ah_lot.l_user "
+                + "INNER JOIN ah_role on ah_role.r_id = ah_user.u_role";
         List<Lot> auctionInfoList = new ArrayList<>();
 
         try (Statement pst = connection.createStatement()) {
@@ -211,6 +236,19 @@ public class LotDAOImpl implements LotDAO {
                 lotState.setTitle(resultSet.getString(LotStateParams.TITLE));
                 lot.setState(lotState);
 
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(resultSet.getInt(UserParams.ID));
+                userInfo.setName(resultSet.getString(UserParams.NAME));
+                userInfo.setUsername(resultSet.getString(UserParams.USERNAME));
+                userInfo.setPassword(resultSet.getString(UserParams.PASSWORD));
+
+                Role role = new Role();
+                role.setId(resultSet.getInt(RoleParams.ID));
+                role.setTitle(resultSet.getString(RoleParams.TITLE));
+                userInfo.setRole(role);
+
+                lot.setUser(userInfo);
+
                 auctionInfoList.add(lot);
             }
 
@@ -224,9 +262,12 @@ public class LotDAOImpl implements LotDAO {
     public List<Lot> getAllLotByState(int state) throws SQLException {
         String query = "SELECT ah_lot.l_id,ah_lot.l_description,ah_lot_type.t_id,"
                 + "ah_lot_type.t_title,ah_lot.l_reserve_price,ah_lot.l_hammer_price,"
-                + "ah_lot_state.s_id,ah_lot_state.s_title FROM `" + tableName + "` "
+                + "ah_lot_state.s_id,ah_lot_state.s_title,ah_user.u_id,ah_user.u_name,"
+                + "ah_user.u_username,ah_user.u_password,ah_role.r_id,ah_role.r_title FROM `" + tableName + "` "
                 + "INNER JOIN ah_lot_type on ah_lot_type.t_id = ah_lot.l_type "
                 + "INNER JOIN ah_lot_state on ah_lot_state.s_id = ah_lot.l_state "
+                + "INNER JOIN ah_user on ah_user.u_id = ah_lot.l_user "
+                + "INNER JOIN ah_role on ah_role.r_id = ah_user.u_role "
                 + "WHERE ah_lot.l_state=?";
         List<Lot> auctionInfoList = new ArrayList<>();
 
@@ -250,7 +291,20 @@ public class LotDAOImpl implements LotDAO {
                 lotState.setId(resultSet.getInt(LotStateParams.ID));
                 lotState.setTitle(resultSet.getString(LotStateParams.TITLE));
                 lot.setState(lotState);
-                
+
+                UserInfo userInfo = new UserInfo();
+                userInfo.setId(resultSet.getInt(UserParams.ID));
+                userInfo.setName(resultSet.getString(UserParams.NAME));
+                userInfo.setUsername(resultSet.getString(UserParams.USERNAME));
+                userInfo.setPassword(resultSet.getString(UserParams.PASSWORD));
+
+                Role role = new Role();
+                role.setId(resultSet.getInt(RoleParams.ID));
+                role.setTitle(resultSet.getString(RoleParams.TITLE));
+                userInfo.setRole(role);
+
+                lot.setUser(userInfo);
+
                 Auction auction = LotMetaBLL.getAuctionAssignedForLot(lot);
                 lot.setAuction(auction);
 
@@ -261,6 +315,18 @@ public class LotDAOImpl implements LotDAO {
         }
 
         return auctionInfoList;
+    }
+
+    @Override
+    public boolean isLotAddedByUser(Lot l) throws SQLException {
+        String query = "SELECT * FROM `" + tableName + "` "
+                + "WHERE ah_lot.l_user =? AND ah_lot.l_id=? LIMIT 1";
+        try (PreparedStatement pst = connection.prepareStatement(query)) {
+            pst.setInt(1, l.getUser().getId());
+            pst.setInt(2, l.getId());
+            ResultSet resultSet = pst.executeQuery();
+            return resultSet.next();
+        }
     }
 
 }

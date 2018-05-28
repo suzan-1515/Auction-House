@@ -182,4 +182,17 @@ public class LotBLL {
         return LotMetaBLL.getLotMetaByLotId(id);
     }
 
+    /**
+     *
+     * @param l
+     * @return
+     * @throws SQLException
+     */
+    public static boolean isLotAddedByUser(Lot l) throws SQLException {
+        Connection con = DBConnection.geConnection();
+        LotDAO lotDAO = new LotDAOImpl(con, LotParams.TABLE_NAME);
+
+        return lotDAO.isLotAddedByUser(l);
+    }
+
 }

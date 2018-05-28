@@ -16,6 +16,10 @@ public final class Role {
 
     public Role() {
     }
+    
+    public Role(int id){
+        this.id = id;
+    }
 
     public Role(int id, String title) {
         this.id = id;

@@ -5,6 +5,8 @@
  */
 package com.nepal.auctionhouse.entity;
 
+import com.nepal.auctionhouse.entity.user.User;
+
 /**
  *
  * @author Suzn
@@ -17,11 +19,13 @@ public final class Lot {
     private float reservePrice;
     private float hammerPrice;
     private LotState state;
+    private User user;
     private Auction auction;
 
     public Lot() {
         type = new LotType();
         state = new LotState();
+        user = new User();
         auction = new Auction();
     }
 
@@ -136,6 +140,20 @@ public final class Lot {
      */
     public void setAuction(Auction auction) {
         this.auction = auction;
+    }
+
+    /**
+     * @return the user
+     */
+    public User getUser() {
+        return user;
+    }
+
+    /**
+     * @param user the user to set
+     */
+    public void setUser(User user) {
+        this.user = user;
     }
 
 }

@@ -19,6 +19,7 @@ public class LotParams {
     public static final String RESERVE_PRICE = "l_reserve_price";
     public static final String HAMMER_PRICE = "l_hammer_price";
     public static final String STATE = "l_state";
+    public static final String USER = "l_user";
 
     public static class LotAllTableHeader {
 

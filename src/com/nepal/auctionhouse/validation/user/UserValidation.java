@@ -20,7 +20,8 @@ public class UserValidation extends BaseValidation {
         super(component);
     }
 
-    public boolean isUserFormValid(String name, String username, String password) {
+    public boolean isUserFormValid(String name, String username, String password,
+            String confirmPassword) {
         Logy.d("Validating user insert form");
         if (isStringEmptyOrNull(name)) {
             Logy.d("User name not valid");
@@ -28,7 +29,21 @@ public class UserValidation extends BaseValidation {
             return false;
         }
 
-        return isUserFormValid(username, password);
+        boolean status = isUserFormValid(username, password);
+        if (status) {
+            if (isStringEmptyOrNull(confirmPassword)) {
+                Logy.d("User confirm password not valid");
+                Alert.showError(component, "Confirm password field cannot be empty.");
+                return false;
+            }
+            if (!password.equals(confirmPassword)) {
+                Logy.d("User password do not match");
+                Alert.showError(component, "Password do not match.");
+                return false;
+            }
+        }
+
+        return status;
     }
 
     public boolean isUserFormValid(String username, String password) {

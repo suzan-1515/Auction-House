@@ -3,70 +3,56 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.nepal.auctionhouse.ui.lot.all;
+package com.nepal.auctionhouse.ui.register;
 
-import com.nepal.auctionhouse.bll.lot.LotBLL;
-import com.nepal.auctionhouse.bll.lot.LotTypeBLL;
-import com.nepal.auctionhouse.entity.Lot;
-import com.nepal.auctionhouse.entity.LotState;
-import com.nepal.auctionhouse.entity.LotType;
+import com.nepal.auctionhouse.bll.user.UserBLL;
+import com.nepal.auctionhouse.entity.Role;
 import com.nepal.auctionhouse.entity.user.UserInfo;
-import com.nepal.auctionhouse.exception.DuplicateRecordException;
+import com.nepal.auctionhouse.exception.UnAvailableUsernameException;
+import com.nepal.auctionhouse.params.UserParams;
 import com.nepal.auctionhouse.util.Logy;
-import com.nepal.auctionhouse.validation.lot.LotValidation;
+import com.nepal.auctionhouse.validation.user.UserValidation;
 import com.nepal.auctionhouse.widget.Alert;
-import java.awt.Component;
-import java.awt.Toolkit;
 import java.sql.SQLException;
-import javax.swing.DefaultListCellRenderer;
-import javax.swing.JList;
-import javax.swing.SwingUtilities;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
 
 /**
  *
  * @author Suzn
  */
-public class LotInsertDialog extends javax.swing.JDialog {
+public class UserRegisterDialog extends javax.swing.JDialog {
 
-    private final LotValidation validation;
+    private final UserValidation validation;
     private ItemAddedListener itemAddedListener;
-    private final UserInfo userInfo;
 
-    private void notifyDataSetChanged(Lot lot) {
+    private void notifyDataSetChanged(UserInfo user) {
         if (getItemAddedListener() != null) {
-            getItemAddedListener().onNewItemAdded(lot);
+            getItemAddedListener().onNewItemAdded(user);
         }
     }
 
     private void resetFields() {
-        descriptionTextArea.setText(null);
-        typeComboBox.setSelectedIndex(0);
-        reservePriceTextField.setText("");
+        nameTextField.setText(null);
+        userTextField.setText(null);
+        passwordField.setText(null);
+        confirmPasswordField.setText(null);
     }
 
     public interface ItemAddedListener {
 
-        void onNewItemAdded(Lot lot);
+        void onNewItemAdded(UserInfo user);
     }
 
     /**
-     * Creates new form LotInsertDialog
+     * Creates new form UserInsertDialog1
      *
      * @param parent
      * @param modal
-     * @param userInfo
      */
-    public LotInsertDialog(java.awt.Frame parent, boolean modal, UserInfo userInfo) {
+    public UserRegisterDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(parent);
-        this.loadData();
-        validation = new LotValidation(parent);
-        this.userInfo = userInfo;
+        validation = new UserValidation(parent);
     }
 
     /**
@@ -88,20 +74,19 @@ public class LotInsertDialog extends javax.swing.JDialog {
         jPanel4 = new javax.swing.JPanel();
         jPanel5 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
+        nameTextField = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        typeComboBox = new javax.swing.JComboBox<LotType>();
+        userTextField = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        passwordField = new javax.swing.JPasswordField();
         jLabel6 = new javax.swing.JLabel();
-        reservePriceTextField = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        descriptionTextArea = new javax.swing.JTextArea();
+        confirmPasswordField = new javax.swing.JPasswordField();
         jPanel6 = new javax.swing.JPanel();
         cancelButton = new javax.swing.JButton();
         saveButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setModal(true);
         setResizable(false);
-        setType(java.awt.Window.Type.UTILITY);
         getContentPane().setLayout(new java.awt.CardLayout());
 
         rootPanel.setLayout(new java.awt.BorderLayout());
@@ -122,7 +107,7 @@ public class LotInsertDialog extends javax.swing.JDialog {
         jLabel1.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
         jLabel1.setForeground(new java.awt.Color(51, 51, 51));
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel1.setText("Add Lot");
+        jLabel1.setText("Register User");
         jLabel1.setPreferredSize(new java.awt.Dimension(113, 50));
 
         javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
@@ -147,9 +132,9 @@ public class LotInsertDialog extends javax.swing.JDialog {
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addContainerGap(141, Short.MAX_VALUE)
+                .addContainerGap(83, Short.MAX_VALUE)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(140, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -166,65 +151,23 @@ public class LotInsertDialog extends javax.swing.JDialog {
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createMatteBorder(0, 1, 1, 1, new java.awt.Color(153, 153, 153)));
-        jPanel4.setPreferredSize(new java.awt.Dimension(380, 326));
+        jPanel4.setPreferredSize(new java.awt.Dimension(380, 200));
 
         jPanel5.setOpaque(false);
 
-        jLabel2.setText("Description");
+        jLabel2.setText("Name");
 
-        jLabel3.setText("Type");
-
-        typeComboBox.setModel(new javax.swing.DefaultComboBoxModel<LotType>());
-        typeComboBox.setRenderer(new DefaultListCellRenderer() {
-            @Override
-            public Component getListCellRendererComponent(JList<?> jlist, Object o, int i, boolean bln, boolean bln1) {
-                super.getListCellRendererComponent(jlist, o, i, bln, bln1);
-                if (o != null) {
-                    LotType lotType = (LotType) o;
-                    setText(lotType.getTitle());
-                }
-                return this;
-            }
-
-        });
-
-        jLabel6.setText("Reserve Price");
-
-        AbstractDocument document = (AbstractDocument) reservePriceTextField.getDocument();
-        final int maxCharacters = 10;
-        document.setDocumentFilter(new DocumentFilter() {
-            public void replace(FilterBypass fb, int offs, int length,
-                String str, AttributeSet a) throws BadLocationException {
-
-                String text = fb.getDocument().getText(0,
-                    fb.getDocument().getLength());
-                text += str;
-                if ((fb.getDocument().getLength() + str.length() - length) <= maxCharacters
-                    && text.matches("^[0-9]+[.]?[0-9]{0,1}$")) {
-                    super.replace(fb, offs, length, str, a);
-                } else {
-                    Toolkit.getDefaultToolkit().beep();
-                }
-            }
-
-            public void insertString(FilterBypass fb, int offs, String str,
-                AttributeSet a) throws BadLocationException {
-
-                String text = fb.getDocument().getText(0,
-                    fb.getDocument().getLength());
-                text += str;
-                if ((fb.getDocument().getLength() + str.length()) <= maxCharacters
-                    && text.matches("^[0-9]+[.]?[0-9]{0,1}$")) {
-                    super.insertString(fb, offs, str, a);
-                } else {
-                    Toolkit.getDefaultToolkit().beep();
-                }
+        nameTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                nameTextFieldKeyTyped(evt);
             }
         });
 
-        descriptionTextArea.setColumns(20);
-        descriptionTextArea.setRows(5);
-        jScrollPane1.setViewportView(descriptionTextArea);
+        jLabel3.setText("Username");
+
+        jLabel4.setText("Password");
+
+        jLabel6.setText("Confirm Password");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -233,34 +176,42 @@ public class LotInsertDialog extends javax.swing.JDialog {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(reservePriceTextField))
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 191, Short.MAX_VALUE))
+                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(userTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel5Layout.createSequentialGroup()
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 166, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(typeComboBox, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, 0)
+                        .addComponent(confirmPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, 168, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(1, 1, 1)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(11, 11, 11)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(nameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(3, 3, 3)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(typeComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(userTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(3, 3, 3)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(reservePriceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(passwordField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(confirmPasswordField, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)))
         );
 
         jPanel6.setBorder(javax.swing.BorderFactory.createMatteBorder(1, 0, 0, 0, new java.awt.Color(255, 51, 0)));
@@ -288,11 +239,11 @@ public class LotInsertDialog extends javax.swing.JDialog {
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
-                .addContainerGap(175, Short.MAX_VALUE)
+                .addContainerGap(172, Short.MAX_VALUE)
                 .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(30, 30, 30))
+                .addGap(36, 36, 36))
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -301,29 +252,29 @@ public class LotInsertDialog extends javax.swing.JDialog {
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
-
-        jPanel6Layout.linkSize(javax.swing.SwingConstants.VERTICAL, new java.awt.Component[] {cancelButton, saveButton});
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
         jPanel4Layout.setHorizontalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+            .addGroup(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         javax.swing.GroupLayout centerPanelLayout = new javax.swing.GroupLayout(centerPanel);
@@ -331,15 +282,15 @@ public class LotInsertDialog extends javax.swing.JDialog {
         centerPanelLayout.setHorizontalGroup(
             centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, centerPanelLayout.createSequentialGroup()
-                .addContainerGap(141, Short.MAX_VALUE)
+                .addContainerGap(83, Short.MAX_VALUE)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 386, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(140, Short.MAX_VALUE))
+                .addContainerGap(83, Short.MAX_VALUE))
         );
         centerPanelLayout.setVerticalGroup(
             centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(centerPanelLayout.createSequentialGroup()
-                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 264, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(80, 80, 80))
+                .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(63, 63, 63))
         );
 
         rootPanel.add(centerPanel, java.awt.BorderLayout.CENTER);
@@ -354,25 +305,23 @@ public class LotInsertDialog extends javax.swing.JDialog {
     }//GEN-LAST:event_cancelButtonActionPerformed
 
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
-        if (validation.isLotFormValid(descriptionTextArea.getText(), reservePriceTextField.getText())) {
+        if (validation.isUserFormValid(nameTextField.getText(), userTextField.getText(),
+                String.valueOf(passwordField.getPassword()), String.valueOf(confirmPasswordField.getPassword()))) {
 
-            Lot lot = new Lot();
-            lot.setDescription(descriptionTextArea.getText());
-            
-            LotType lotType = (LotType) typeComboBox.getSelectedItem();
-            lot.setType(lotType);
-            lot.setReservePrice(Float.parseFloat(reservePriceTextField.getText()));
-            lot.setState(new LotState(1));
-            lot.setUser(userInfo);
+            UserInfo user = new UserInfo();
+            user.setName(nameTextField.getText());
+            user.setUsername(userTextField.getText());
+            user.setPassword(String.valueOf(passwordField.getPassword()));
+            user.setRole(new Role(UserParams.ROLE_USER));
 
             try {
-                int id = LotBLL.insertLot(lot);
-                lot.setId(id);
-                notifyDataSetChanged(lot);
-                Alert.showInformation(this, "Lot inserted successfully!");
+                int id = UserBLL.insertUser(user);
+                user.setId(id);
+                notifyDataSetChanged(user);
+                Alert.showInformation(this, "User registered successfully!");
 
                 this.dispose();
-            } catch (DuplicateRecordException | SQLException ex) {
+            } catch (UnAvailableUsernameException | SQLException ex) {
                 Logy.e(ex);
                 Alert.showError(this, ex.getMessage());
             }
@@ -380,14 +329,39 @@ public class LotInsertDialog extends javax.swing.JDialog {
         }
     }//GEN-LAST:event_saveButtonActionPerformed
 
+    private void nameTextFieldKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameTextFieldKeyTyped
+        char c = evt.getKeyChar();
+        if(Character.isDigit(c)){
+            evt.consume();
+        }
+    }//GEN-LAST:event_nameTextFieldKeyTyped
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String args[]) {
+
+        /* Create and display the dialog */
+        java.awt.EventQueue.invokeLater(() -> {
+            UserRegisterDialog dialog = new UserRegisterDialog(new javax.swing.JFrame(), true);
+            dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent e) {
+                    System.exit(0);
+                }
+            });
+            dialog.setVisible(true);
+        });
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton cancelButton;
     private javax.swing.JPanel centerPanel;
-    private javax.swing.JTextArea descriptionTextArea;
+    private javax.swing.JPasswordField confirmPasswordField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -395,29 +369,13 @@ public class LotInsertDialog extends javax.swing.JDialog {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JPanel jPanel6;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTextField reservePriceTextField;
+    private javax.swing.JTextField nameTextField;
+    private javax.swing.JPasswordField passwordField;
     private javax.swing.JPanel rootPanel;
     private javax.swing.JButton saveButton;
     private javax.swing.JPanel topPanel;
-    private javax.swing.JComboBox<LotType> typeComboBox;
+    private javax.swing.JTextField userTextField;
     // End of variables declaration//GEN-END:variables
-
-    private void loadData() {
-        SwingUtilities.invokeLater(() -> {
-
-            try {
-                LotTypeBLL.getAllLotType().stream()
-                        .forEach(lotType -> {
-                            typeComboBox.addItem(lotType);
-                        });
-
-            } catch (SQLException ex) {
-                Logy.e(ex);
-                Alert.showError(this, ex.getMessage());
-            }
-        });
-    }
 
     /**
      * @return the itemAddedListener

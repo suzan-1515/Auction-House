@@ -12,6 +12,8 @@ package com.nepal.auctionhouse.params;
 public class UserParams {
     
     public static final String TABLE_NAME = "ah_user";
+    public static final int ROLE_ADMIN = 1;
+    public static final int ROLE_USER = 2;
 
     public static final String ID = "u_id";
     public static final String NAME = "u_name";
